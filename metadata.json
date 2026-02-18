@@ -1,0 +1,7 @@
+{
+  "name": "Quick Note-to-Quiz",
+  "description": "Transform your study notes into interactive multiple-choice quizzes using AI. Generate, practice, and export personalized assessments in seconds.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
