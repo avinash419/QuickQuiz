@@ -67,7 +67,8 @@ export const generateQuizFromImage = async (
   base64Image: string,
   difficulty: Difficulty,
   numQuestions: number,
-  language: string = 'Hindi'
+  language: string = 'Hindi',
+  topic?: string
 ): Promise<Quiz> => {
   const model = 'gemini-3-flash-preview';
 
@@ -82,6 +83,7 @@ export const generateQuizFromImage = async (
       },
       {
         text: `Analyze the study material in this image (notes, book chapter, or hand-written notes). 
+        ${topic ? `The topic is: ${topic}` : ''}
         1. Extract the key educational content.
         2. Generate ${numQuestions} multiple choice questions.
         3. Language: ${language}

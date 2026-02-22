@@ -125,19 +125,19 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 md:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+        <div className="p-3 md:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <button 
             onClick={onClose} 
-            className="p-2 bg-white hover:bg-slate-100 rounded-xl transition-all border border-slate-200 text-slate-600 flex items-center gap-2 font-bold text-sm"
+            className="p-2 md:p-2 bg-white hover:bg-slate-100 rounded-lg md:rounded-xl transition-all border border-slate-200 text-slate-600 flex items-center gap-1.5 md:gap-2 font-bold text-xs md:text-sm"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
             Back
           </button>
           <div className="text-center">
-            <h2 className="text-lg font-black text-slate-900 leading-tight">AI Note Scanner</h2>
-            <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">Image to Quiz</p>
+            <h2 className="text-base md:text-lg font-black text-slate-900 leading-tight">AI Note Scanner</h2>
+            <p className="text-[9px] md:text-[10px] text-blue-600 font-black uppercase tracking-widest">Image to Quiz</p>
           </div>
-          <div className="w-16"></div> {/* Spacer for alignment */}
+          <div className="w-12 md:w-16"></div> {/* Spacer for alignment */}
         </div>
 
         {/* Viewport */}
@@ -191,36 +191,36 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
         </div>
 
         {/* Footer / Controls */}
-        <div className="p-6 md:p-8 bg-white border-t border-slate-100">
+        <div className="p-6 md:p-8 bg-white border-t border-slate-100 safe-area-bottom">
           {!capturedImage ? (
             <div className="flex flex-col items-center gap-4">
               <button 
                 onClick={capturePhoto}
                 disabled={!isCameraReady || isInitializing}
-                className={`group relative flex flex-col items-center gap-3 transition-all ${(!isCameraReady || isInitializing) ? 'opacity-40 grayscale cursor-not-allowed' : 'active:scale-95'}`}
+                className={`group relative flex flex-col items-center gap-3 transition-all ${(!isCameraReady || isInitializing) ? 'opacity-40 grayscale cursor-not-allowed' : 'active:scale-90'}`}
               >
                 {/* Visual Button */}
-                <div className="w-20 h-20 rounded-full border-4 border-slate-100 flex items-center justify-center p-2 group-hover:border-blue-100 transition-colors">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-slate-100 flex items-center justify-center p-1.5 md:p-2 group-hover:border-blue-100 transition-colors">
                   <div className="w-full h-full rounded-full bg-blue-600 shadow-xl shadow-blue-600/30 border-4 border-white"></div>
                 </div>
-                <span className="text-xs font-black text-slate-800 uppercase tracking-widest">Tap to Capture</span>
+                <span className="text-[10px] md:text-xs font-black text-slate-800 uppercase tracking-widest">Tap to Capture</span>
               </button>
             </div>
           ) : (
-            <div className="flex w-full gap-4 max-w-md mx-auto">
+            <div className="flex w-full gap-3 md:gap-4 max-w-md mx-auto">
               <button 
                 onClick={() => setCapturedImage(null)}
-                className="flex-1 py-4 bg-slate-100 text-slate-700 font-black rounded-2xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 border border-slate-200 shadow-sm"
+                className="flex-1 py-3.5 md:py-4 bg-slate-100 text-slate-700 font-black rounded-xl md:rounded-2xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 border border-slate-200 shadow-sm text-sm md:text-base"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                 Retake
               </button>
               <button 
                 onClick={handleUsePhoto}
-                className="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3"
+                className="flex-[2] py-3.5 md:py-4 bg-blue-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base"
               >
-                Analyze & Quiz 🚀
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                Analyze 🚀
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
               </button>
             </div>
           )}

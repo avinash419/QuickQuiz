@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [isTipsOpen, setIsTipsOpen] = useState(false);
 
   const handleGenerate = async (notes: string, difficulty: Difficulty, count: number, language: string) => {
+    setAppState('GENERATING');
     setLoading(true);
     setError(null);
     try {
@@ -26,21 +27,24 @@ const App: React.FC = () => {
     } catch (err) {
       console.error("Quiz generation failed", err);
       setError("Failed to generate quiz. Please check your notes or try again later.");
+      setAppState('HOME');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleScan = async (base64: string, difficulty: Difficulty, count: number, language: string) => {
+  const handleScan = async (base64: string, difficulty: Difficulty, count: number, language: string, topic?: string) => {
+    setAppState('GENERATING');
     setLoading(true);
     setError(null);
     try {
-      const generatedQuiz = await generateQuizFromImage(base64, difficulty, count, language);
+      const generatedQuiz = await generateQuizFromImage(base64, difficulty, count, language, topic);
       setQuiz(generatedQuiz);
       setAppState('QUIZ');
     } catch (err) {
       console.error("Scanning quiz generation failed", err);
       setError("Failed to process scan. Ensure the photo is clear and contains text.");
+      setAppState('HOME');
     } finally {
       setLoading(false);
     }
@@ -83,6 +87,31 @@ const App: React.FC = () => {
 
         {appState === 'HOME' && (
           <Home onGenerate={handleGenerate} onScan={handleScan} loading={loading} />
+        )}
+
+        {appState === 'GENERATING' && (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center animate-fadeIn">
+            <div className="relative w-32 h-32 md:w-48 md:h-48 mb-8">
+              <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
+              <div className="absolute inset-4 bg-indigo-500/20 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl shadow-2xl flex items-center justify-center animate-bounce">
+                  <svg className="w-8 h-8 md:w-12 md:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">AI is crafting your quiz...</h2>
+            <p className="text-slate-500 font-bold text-sm md:text-base max-w-md mx-auto leading-relaxed">
+              We're analyzing your notes and generating high-quality questions. This usually takes 10-15 seconds.
+            </p>
+            <div className="mt-8 flex gap-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            </div>
+          </div>
         )}
 
         {appState === 'QUIZ' && quiz && (
