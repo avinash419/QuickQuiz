@@ -27,4 +27,4 @@ export interface QuizResult {
   timeTaken: number; // seconds
 }
 
-export type AppState = 'HOME' | 'GENERATING' | 'QUIZ' | 'RESULT';
+export type AppState = 'HOME' | 'GENERATING' | 'QUIZ' | 'RESULT' | 'ARTICLES' | 'ABOUT' | 'CONTACT' | 'PRIVACY' | 'TERMS' | 'DISCLAIMER' | 'GK_QUIZ' | 'SCIENCE_QUIZ' | 'HISTORY_QUIZ';

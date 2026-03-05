@@ -1,42 +1,140 @@
 
 import React from 'react';
+import { BookOpen, Lightbulb, Menu, X, GraduationCap, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { AppState } from '../types';
 
 interface HeaderProps {
   onShowTips: () => void;
+  onShowArticles: () => void;
+  onGoHome: () => void;
+  onNavigate: (state: AppState) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onShowTips }) => {
+const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, onNavigate }) => {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  const navLinks = [
+    { label: 'Home', action: onGoHome },
+    { label: 'GK Quiz', action: () => onNavigate('GK_QUIZ') },
+    { label: 'Science Quiz', action: () => onNavigate('SCIENCE_QUIZ') },
+    { label: 'History Quiz', action: () => onNavigate('HISTORY_QUIZ') },
+    { label: 'Blog', action: onShowArticles },
+    { label: 'About', action: () => onNavigate('ABOUT') },
+    { label: 'Contact', action: () => onNavigate('CONTACT') },
+  ];
+
+  // Prevent body scroll when menu is open
+  React.useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className="glass border-b border-white/40 sticky top-0 z-50 py-2 md:py-3 px-4 md:px-6 no-print">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2 md:gap-3">
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-lg md:rounded-xl shadow-lg shadow-blue-500/20">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
+    <header className="glass border-b border-slate-200/60 sticky top-0 z-50 py-3 px-4 md:px-6 no-print">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div 
+          className="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0"
+          onClick={() => {
+            onGoHome();
+            setIsMenuOpen(false);
+          }}
+        >
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 sm:p-2.5 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-all duration-300 group-hover:rotate-3">
+            <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg md:text-xl font-extrabold text-slate-900 tracking-tight leading-none">QuickQuiz</h1>
-            <p className="text-[9px] md:text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-0.5 md:mt-1">AI Study Engine</p>
+            <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-none font-display">QuickQuiz</h1>
+            <p className="text-[8px] sm:text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] mt-0.5 sm:mt-1">AI Study Engine</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 md:gap-4">
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold text-slate-600">
+          {navLinks.map((link) => (
+            <button
+              key={link.label}
+              onClick={(e) => { e.preventDefault(); link.action(); }}
+              className="px-4 py-2 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-all duration-200"
+            >
+              {link.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2 sm:gap-3">
           <button 
             onClick={(e) => { e.preventDefault(); onShowTips(); }}
-            className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-blue-50 text-blue-700 text-xs md:text-sm font-bold hover:bg-blue-100 transition-all border border-blue-200/50"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-blue-50 text-blue-700 text-xs sm:text-sm font-black hover:bg-blue-100 transition-all border border-blue-200/50 shadow-sm shadow-blue-500/5"
           >
-            <span className="text-sm md:text-base">💡</span>
-            <span className="hidden xs:inline">Tips</span>
-            <span className="hidden sm:inline">Study Tips</span>
+            <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Study Tips</span>
           </button>
           
-          <nav className="hidden md:flex gap-6 text-sm font-semibold text-slate-600 ml-4">
-            <a href="#" className="hover:text-blue-600 transition-colors">How it works</a>
-            <a href="https://github.com" className="hover:text-blue-600 transition-colors">Feedback</a>
-          </nav>
+          <button 
+            className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative z-[100]"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[60] lg:hidden"
+            />
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed top-0 right-0 h-[100dvh] w-[300px] bg-white z-[70] lg:hidden shadow-2xl flex flex-col"
+            >
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                <span className="font-black text-slate-900 tracking-tight">Navigation</span>
+                <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-slate-100 rounded-lg">
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+              <div className="p-4 flex-grow overflow-y-auto">
+                {navLinks.map((link, i) => (
+                  <motion.button
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    key={link.label}
+                    onClick={() => { 
+                      link.action(); 
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-5 py-4 rounded-2xl font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all mb-2 flex items-center justify-between group"
+                  >
+                    {link.label}
+                    <ArrowRight className="w-4 h-4 opacity-40 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                  </motion.button>
+                ))}
+              </div>
+              <div className="p-6 border-t border-slate-100 bg-slate-50">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">© 2026 QuickQuiz AI</p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
