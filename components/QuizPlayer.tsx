@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Quiz, QuizResult } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Timer, CheckCircle2, XCircle, ArrowRight, Info } from 'lucide-react';
+import { ArrowLeft, Timer, CheckCircle2, XCircle, ArrowRight, Info, BookOpen } from 'lucide-react';
 
 interface QuizPlayerProps {
   quiz: Quiz;
@@ -11,6 +11,7 @@ interface QuizPlayerProps {
 }
 
 const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onFinish, onExit }) => {
+  const [view, setView] = useState<'INTRO' | 'QUIZ'>('INTRO');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>(new Array(quiz.questions.length).fill(-1));
   const [isAnswered, setIsAnswered] = useState(false);
@@ -20,11 +21,13 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onFinish, onExit }) => {
   const progress = ((currentIndex + 1) / quiz.questions.length) * 100;
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    if (view === 'QUIZ') {
+      const interval = setInterval(() => {
+        setTimer(prev => prev + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [view]);
 
   const handleSelect = (idx: number) => {
     if (isAnswered) return;
@@ -59,6 +62,50 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quiz, onFinish, onExit }) => {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  if (view === 'INTRO') {
+    return (
+      <div className="max-w-4xl mx-auto py-6 md:py-12 px-4 md:px-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] border border-slate-200/60 overflow-hidden"
+        >
+          <div className="p-8 md:p-20">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-2xl md:text-5xl font-black text-slate-900 tracking-tight font-display">{quiz.title}</h2>
+            </div>
+            
+            <div className="prose prose-slate prose-lg max-w-none mb-12">
+              <h3 className="text-xl font-black text-slate-800 mb-4 uppercase tracking-widest text-xs">Introduction</h3>
+              <div className="text-slate-600 leading-relaxed font-medium whitespace-pre-wrap">
+                {quiz.introArticle}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                onClick={() => setView('QUIZ')}
+                className="flex-grow py-5 md:py-6 bg-blue-600 text-white font-black rounded-2xl md:rounded-3xl hover:bg-blue-700 transition-all shadow-2xl shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-4 text-xl"
+              >
+                Start Quiz
+                <ArrowRight className="w-6 h-6" />
+              </button>
+              <button 
+                onClick={onExit}
+                className="px-8 py-5 md:py-6 bg-slate-100 text-slate-600 font-black rounded-2xl md:rounded-3xl hover:bg-slate-200 transition-all active:scale-95 text-lg"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto py-6 md:py-12 px-4 md:px-6">

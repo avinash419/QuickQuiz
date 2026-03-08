@@ -8,6 +8,10 @@ const QUIZ_SCHEMA = {
   type: Type.OBJECT,
   properties: {
     title: { type: Type.STRING },
+    introArticle: { 
+      type: Type.STRING, 
+      description: "A comprehensive introductory article (approx 300 words) about the topic to prepare the student for the quiz." 
+    },
     questions: {
       type: Type.ARRAY,
       items: {
@@ -29,9 +33,13 @@ const QUIZ_SCHEMA = {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: "A list of 2-3 specific topics the user should review if they miss these questions"
+    },
+    conclusionArticle: { 
+      type: Type.STRING, 
+      description: "A detailed concluding article (approx 300 words) that reinforces the concepts covered in the quiz and provides deeper context." 
     }
   },
-  required: ["title", "questions", "notesSummary", "weakAreas"]
+  required: ["title", "introArticle", "questions", "notesSummary", "weakAreas", "conclusionArticle"]
 };
 
 export const generateQuiz = async (
@@ -44,17 +52,24 @@ export const generateQuiz = async (
 
   const response = await ai.models.generateContent({
     model: model,
-    contents: `Please generate a quiz based on the following notes. 
+    contents: `Please generate a comprehensive study package based on the following notes. 
     Requested Language: ${language}
     Difficulty: ${difficulty}
     Number of questions: ${numQuestions}
     
+    The package MUST include:
+    1. A detailed introductory article (approx 300 words) to set the context.
+    2. ${numQuestions} multiple choice questions with explanations.
+    3. A detailed concluding article (approx 300 words) that summarizes key takeaways and provides deeper insights.
+    
     Notes content:
     ${notes.substring(0, 8000)}`,
     config: {
-      systemInstruction: `You are an expert quiz generator. Analyze the notes provided and create high-quality multiple choice questions. 
+      systemInstruction: `You are an expert educational content creator. Analyze the notes provided and create a high-quality study package. 
       CRITICAL: You MUST generate all text content strictly in ${language}.
-      Ensure each question has exactly 4 unique options. Output in JSON.`,
+      Ensure each question has exactly 4 unique options. 
+      The intro and conclusion articles should be around 300 words each, professional, and highly educational.
+      Output in JSON matching the specified schema.`,
       responseMimeType: "application/json",
       responseSchema: QUIZ_SCHEMA as any
     }
@@ -85,15 +100,20 @@ export const generateQuizFromImage = async (
         text: `Analyze the study material in this image (notes, book chapter, or hand-written notes). 
         ${topic ? `The topic is: ${topic}` : ''}
         1. Extract the key educational content.
-        2. Generate ${numQuestions} multiple choice questions.
+        2. Generate a comprehensive study package including:
+           - A detailed introductory article (approx 300 words).
+           - ${numQuestions} multiple choice questions with explanations.
+           - A detailed concluding article (approx 300 words).
         3. Language: ${language}
         4. Difficulty: ${difficulty}`
       }
     ],
     config: {
-      systemInstruction: `You are an expert OCR and quiz generator. Extract text from the provided image and transform it into a professional quiz.
+      systemInstruction: `You are an expert OCR and educational content creator. Extract text from the provided image and transform it into a professional study package.
       CRITICAL: You MUST generate all text content strictly in ${language}.
-      Ensure each question has exactly 4 unique options. Output in JSON matching the specified schema.`,
+      Ensure each question has exactly 4 unique options. 
+      The intro and conclusion articles should be around 300 words each, professional, and highly educational.
+      Output in JSON matching the specified schema.`,
       responseMimeType: "application/json",
       responseSchema: QUIZ_SCHEMA as any
     }

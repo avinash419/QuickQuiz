@@ -14,10 +14,12 @@ export interface Question {
 
 export interface Quiz {
   title: string;
+  introArticle: string;
   questions: Question[];
   difficulty: Difficulty;
   notesSummary: string;
   weakAreas?: string[];
+  conclusionArticle: string;
 }
 
 export interface QuizResult {

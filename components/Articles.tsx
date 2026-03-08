@@ -27,23 +27,36 @@ const Articles: React.FC<ArticlesProps> = ({ onBack }) => {
           Back to Articles
         </button>
 
-        <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] border border-slate-200/60">
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-6 md:mb-10">
-            <span className="px-3 md:px-4 py-1 md:py-1.5 bg-blue-600 text-white text-[8px] md:text-[10px] font-black rounded-full uppercase tracking-[0.2em]">
-              {selectedArticle.category}
-            </span>
-            <div className="flex items-center gap-1.5 md:gap-2 text-slate-400 text-[10px] md:text-xs font-bold">
-              <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4" />
-              {selectedArticle.date}
+        <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] border border-slate-200/60 overflow-hidden">
+          {selectedArticle.imageUrl && (
+            <div className="w-full h-[300px] md:h-[500px] overflow-hidden">
+              <img 
+                src={selectedArticle.imageUrl} 
+                alt={selectedArticle.title}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
             </div>
-            <div className="flex items-center gap-1.5 md:gap-2 text-slate-400 text-[10px] md:text-xs font-bold">
-              <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
-              {selectedArticle.readTime} read
-            </div>
-          </div>
+          )}
           
-          <div className="prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:leading-relaxed prose-a:text-blue-600 prose-img:rounded-[1.5rem] md:prose-img:rounded-[2rem] prose-img:shadow-2xl font-medium text-base md:text-xl text-slate-700">
-            <ReactMarkdown>{selectedArticle.content}</ReactMarkdown>
+          <div className="p-6 md:p-16">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-6 md:mb-10">
+              <span className="px-3 md:px-4 py-1 md:py-1.5 bg-blue-600 text-white text-[8px] md:text-[10px] font-black rounded-full uppercase tracking-[0.2em]">
+                {selectedArticle.category}
+              </span>
+              <div className="flex items-center gap-1.5 md:gap-2 text-slate-400 text-[10px] md:text-xs font-bold">
+                <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                {selectedArticle.date}
+              </div>
+              <div className="flex items-center gap-1.5 md:gap-2 text-slate-400 text-[10px] md:text-xs font-bold">
+                <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                {selectedArticle.readTime} read
+              </div>
+            </div>
+            
+            <div className="prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:leading-relaxed prose-a:text-blue-600 prose-img:rounded-[1.5rem] md:prose-img:rounded-[2rem] prose-img:shadow-2xl font-medium text-base md:text-xl text-slate-700">
+              <ReactMarkdown>{selectedArticle.content}</ReactMarkdown>
+            </div>
           </div>
         </div>
 
@@ -113,30 +126,42 @@ const Articles: React.FC<ArticlesProps> = ({ onBack }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 * index }}
-            className="group bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-slate-200/60 hover:border-blue-400 hover:shadow-[0_40px_80px_-20px_rgba(59,130,246,0.15)] transition-all cursor-pointer flex flex-col relative overflow-hidden"
+            className="group bg-white rounded-[2rem] md:rounded-[3rem] border border-slate-200/60 hover:border-blue-400 hover:shadow-[0_40px_80px_-20px_rgba(59,130,246,0.15)] transition-all cursor-pointer flex flex-col relative overflow-hidden"
             onClick={() => setSelectedArticle(article)}
           >
-            <div className="absolute top-0 right-0 p-6 md:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Sparkles className="w-16 h-16 md:w-24 md:h-24" />
-            </div>
-            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
-              <span className="px-3 md:px-4 py-1 md:py-1.5 bg-slate-100 text-slate-600 text-[8px] md:text-[10px] font-black rounded-full uppercase tracking-[0.2em] group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                {article.category}
-              </span>
-              <div className="flex items-center gap-1.5 md:gap-2 text-slate-400 text-[8px] md:text-[10px] font-black uppercase tracking-widest">
-                <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                {article.readTime} read
+            {article.imageUrl && (
+              <div className="w-full h-48 md:h-64 overflow-hidden">
+                <img 
+                  src={article.imageUrl} 
+                  alt={article.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-            </div>
-            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-4 md:mb-6 group-hover:text-blue-600 transition-colors leading-tight font-display">
-              {article.title}
-            </h3>
-            <p className="text-slate-500 font-medium mb-8 md:mb-10 line-clamp-3 leading-relaxed text-base md:text-lg">
-              {article.excerpt}
-            </p>
-            <div className="mt-auto flex items-center gap-2 md:gap-3 text-blue-600 font-black text-[10px] md:text-sm uppercase tracking-widest">
-              Read Article
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />
+            )}
+            <div className="p-6 md:p-10">
+              <div className="absolute top-0 right-0 p-6 md:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Sparkles className="w-16 h-16 md:w-24 md:h-24" />
+              </div>
+              <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                <span className="px-3 md:px-4 py-1 md:py-1.5 bg-slate-100 text-slate-600 text-[8px] md:text-[10px] font-black rounded-full uppercase tracking-[0.2em] group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  {article.category}
+                </span>
+                <div className="flex items-center gap-1.5 md:gap-2 text-slate-400 text-[8px] md:text-[10px] font-black uppercase tracking-widest">
+                  <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  {article.readTime} read
+                </div>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-4 md:mb-6 group-hover:text-blue-600 transition-colors leading-tight font-display">
+                {article.title}
+              </h3>
+              <p className="text-slate-500 font-medium mb-8 md:mb-10 line-clamp-3 leading-relaxed text-base md:text-lg">
+                {article.excerpt}
+              </p>
+              <div className="mt-auto flex items-center gap-2 md:gap-3 text-blue-600 font-black text-[10px] md:text-sm uppercase tracking-widest">
+                Read Article
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" />
+              </div>
             </div>
           </motion.div>
         ))}

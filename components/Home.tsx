@@ -303,70 +303,91 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
       </div>
 
       {/* Detailed Homepage Content */}
-      <div className="mt-20 md:mt-32 space-y-20 md:space-y-32">
-        {/* Introduction */}
-        <section className="max-w-4xl mx-auto px-2">
+      <div className="mt-20 md:mt-32 space-y-24 md:space-y-40">
+        {/* Section 1: About QuickQuiz */}
+        <section id="about-quickquiz" className="max-w-4xl mx-auto px-2">
           <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
             <div className="h-px flex-grow bg-slate-200"></div>
-            <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Introduction</span>
+            <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">About QuickQuiz</span>
             <div className="h-px flex-grow bg-slate-200"></div>
           </div>
-          <h2 className="text-3xl md:text-6xl font-black text-slate-900 mb-8 md:mb-10 tracking-tight text-center font-display leading-tight">
-            Welcome to the Future of <br /><span className="text-blue-600">Personalized Learning</span>
+          <h2 className="text-3xl md:text-6xl font-black text-slate-900 mb-8 md:mb-12 tracking-tight text-center font-display leading-tight">
+            The Vision Behind <br /><span className="text-blue-600">QuickQuiz AI</span>
           </h2>
-          <div className="prose prose-slate prose-base md:prose-lg max-w-none text-slate-600 font-medium leading-relaxed space-y-6 md:space-y-8">
+          <div className="prose prose-slate prose-base md:prose-lg max-w-none text-slate-600 font-medium leading-relaxed space-y-8">
             <p>
-              In an era where information is abundant but time is scarce, the way we consume and retain knowledge must evolve. Traditional methods of studying—reading, highlighting, and passive review—are increasingly proving to be inefficient in the face of modern academic and professional demands. Enter <strong>QuickQuiz</strong>, the revolutionary AI-powered study companion designed to bridge the gap between information and mastery.
+              QuickQuiz was born out of a simple yet profound observation: the world is drowning in information, but starving for true knowledge. As students and lifelong learners ourselves, we realized that the traditional "read-and-repeat" model of education was failing to keep pace with the sheer volume of data we are expected to master. We spent hours highlighting textbooks and re-reading notes, only to find that 70% of that information vanished within 24 hours. This is known as the "Forgetting Curve," and QuickQuiz is our answer to it.
             </p>
             <p>
-              Our platform is built on the fundamental principle of <strong>Active Recall</strong>. Science has consistently shown that the most effective way to learn is not by putting information <em>into</em> your brain, but by trying to get it <em>out</em>. By transforming your static notes, textbook pages, and lecture materials into dynamic, interactive quizzes, QuickQuiz forces your brain to engage with the content, strengthening neural pathways and ensuring long-term retention.
+              Our mission is to democratize high-quality, personalized education. We believe that every learner deserves a private tutor who can instantly turn any piece of text into a challenging, insightful assessment. By leveraging the power of the Gemini 1.5 Flash model, we've built an engine that doesn't just "read" your notes—it understands them. It identifies the nuances, the critical connections, and the potential pitfalls in your understanding, crafting questions that push you to think deeper.
+            </p>
+            <p>
+              Since our inception, we have focused on three core pillars: <strong>Speed</strong>, <strong>Accuracy</strong>, and <strong>Accessibility</strong>. We know that when you're in the "flow state" of studying, every second counts. That's why our AI generates comprehensive study packages in under 15 seconds. We ensure accuracy by using sophisticated prompt engineering that minimizes hallucinations and maximizes educational value. And through our multilingual support, we ensure that whether you're studying in Hindi or English, the quality of your learning remains world-class.
+            </p>
+            <p>
+              QuickQuiz isn't just a tool; it's a movement toward more intentional, effective, and joyful learning. We are constantly evolving, integrating the latest research in cognitive science and artificial intelligence to ensure that your study sessions are not just busy work, but true progress toward mastery.
             </p>
           </div>
         </section>
 
-        {/* What is QuickQuiz */}
-        <section className="bg-slate-900 -mx-4 md:-mx-12 px-6 md:px-20 py-20 md:py-32 rounded-[2.5rem] md:rounded-[4rem] text-white relative overflow-hidden">
+        {/* Section 2: Why Quizzes Help Learning */}
+        <section id="learning-science" className="bg-slate-900 -mx-4 md:-mx-12 px-6 md:px-20 py-20 md:py-32 rounded-[2.5rem] md:rounded-[4rem] text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-blue-500/10 rounded-full blur-[80px] md:blur-[120px]"></div>
           <div className="absolute bottom-0 left-0 w-64 md:w-96 h-64 md:h-96 bg-indigo-500/10 rounded-full blur-[80px] md:blur-[120px]"></div>
           
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
-              <span className="text-[8px] md:text-[10px] font-black text-blue-400 uppercase tracking-[0.4em]">What is QuickQuiz?</span>
+              <span className="text-[8px] md:text-[10px] font-black text-blue-400 uppercase tracking-[0.4em]">The Science of Learning</span>
               <div className="h-px flex-grow bg-white/10"></div>
             </div>
-            <h2 className="text-3xl md:text-6xl font-black text-white mb-10 md:mb-12 tracking-tight font-display leading-tight">
-              An Intelligent Bridge Between <br />Notes and Knowledge
+            <h2 className="text-3xl md:text-6xl font-black text-white mb-10 md:mb-16 tracking-tight font-display leading-tight">
+              Why Quizzing is the <br />Ultimate Learning Hack
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
-              <div className="space-y-6 md:space-y-8 text-slate-400 font-medium text-base md:text-lg leading-relaxed">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-start">
+              <div className="space-y-8 text-slate-400 font-medium text-base md:text-lg leading-relaxed">
                 <p>
-                  QuickQuiz is more than just a quiz generator; it's a sophisticated educational engine powered by the latest advancements in Large Language Models (LLMs). Our technology analyzes the semantic structure of your study material, identifying key concepts, dates, formulas, and relationships that are critical for understanding.
+                  Most people think of quizzes as a way to <em>test</em> what they've learned. At QuickQuiz, we know that quizzes are actually a way to <strong>learn</strong>. This is based on a cognitive phenomenon called the "Testing Effect." When you try to retrieve information from your memory, you aren't just checking if it's there—you are actually strengthening the neural pathways that lead to that information.
                 </p>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 bg-blue-500 rounded-full"></div>
+                    <p><strong className="text-white">Active Recall:</strong> Unlike passive reading, active recall forces your brain to reconstruct the information. This effortful processing signals to your brain that the information is important, making it much more likely to be stored in long-term memory.</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 bg-indigo-500 rounded-full"></div>
+                    <p><strong className="text-white">Metacognition:</strong> Quizzing provides immediate feedback. You quickly realize what you <em>actually</em> know versus what you <em>think</em> you know. This eliminates the "Illusion of Competence" that often comes from re-reading familiar text.</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 bg-violet-500 rounded-full"></div>
+                    <p><strong className="text-white">Contextual Encoding:</strong> Our AI-generated explanations provide the "Why" behind the "What." By understanding the logic of a correct answer, you encode the information within a broader context, making it easier to apply in different scenarios.</p>
+                  </div>
+                </div>
                 <p>
-                  Whether you're a medical student tackling complex anatomy, a law student memorizing case law, or a professional staying updated with industry trends, QuickQuiz adapts to your specific needs. We support multiple input methods, including direct text pasting and advanced OCR (Optical Character Recognition) for scanning physical documents.
+                  By integrating these principles into a seamless, AI-driven workflow, QuickQuiz transforms your study sessions from a chore into a high-intensity workout for your mind. You'll find that you remember more, understand deeper, and perform better under pressure.
                 </p>
               </div>
-              <div className="grid grid-cols-1 gap-4 md:gap-6">
-                <div className="bg-white/5 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 space-y-4 md:space-y-6 hover:bg-white/10 transition-all duration-500">
-                  <div className="flex items-center gap-4 md:gap-5">
-                    <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400">
-                      <Zap className="w-6 h-6 md:w-7 md:h-7" />
-                    </div>
-                    <h4 className="text-lg md:text-xl font-black text-white font-display">Instant Processing</h4>
-                  </div>
-                  <p className="text-slate-400 font-medium leading-relaxed text-sm md:text-base">
-                    Our AI can process up to 10,000 characters in seconds, generating high-quality multiple-choice questions with detailed explanations.
+              <div className="grid grid-cols-1 gap-6">
+                <div className="bg-white/5 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] border border-white/10 space-y-6">
+                  <h4 className="text-xl md:text-2xl font-black text-white font-display">The Forgetting Curve</h4>
+                  <p className="text-slate-400 font-medium leading-relaxed">
+                    Without active review, humans forget nearly 90% of new information within a month. Quizzing at strategic intervals (Spaced Repetition) flattens this curve, keeping your knowledge fresh and accessible indefinitely.
                   </p>
-                </div>
-                <div className="bg-white/5 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 space-y-4 md:space-y-6 hover:bg-white/10 transition-all duration-500">
-                  <div className="flex items-center gap-4 md:gap-5">
-                    <div className="w-12 h-12 md:w-14 md:h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
-                      <Globe className="w-6 h-6 md:w-7 md:h-7" />
-                    </div>
-                    <h4 className="text-lg md:text-xl font-black text-white font-display">Native Multilingualism</h4>
+                  <div className="h-32 flex items-end gap-2 px-4">
+                    {[40, 70, 50, 90, 60, 100].map((h, i) => (
+                      <div key={i} className="flex-1 bg-blue-500/20 rounded-t-lg relative group">
+                        <motion.div 
+                          initial={{ height: 0 }}
+                          whileInView={{ height: `${h}%` }}
+                          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-600 to-indigo-500 rounded-t-lg"
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-slate-400 font-medium leading-relaxed text-sm md:text-base">
-                    Study in your native tongue. With full support for Hindi and English, we ensure that language is never a barrier to success.
+                </div>
+                <div className="bg-white/5 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] border border-white/10 space-y-6">
+                  <h4 className="text-xl md:text-2xl font-black text-white font-display">Neural Plasticity</h4>
+                  <p className="text-slate-400 font-medium leading-relaxed">
+                    Every time you answer a question correctly, you reinforce the synaptic connections related to that topic. QuickQuiz is designed to provide the "Desirable Difficulty" needed to trigger this growth without causing frustration.
                   </p>
                 </div>
               </div>
@@ -374,75 +395,193 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
           </div>
         </section>
 
-        {/* Benefits */}
-        <section className="max-w-5xl mx-auto">
-          <div className="text-center mb-12 md:mb-20">
-            <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 md:mb-6 block">Benefits</span>
-            <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tight font-display">
-              Why Students Love QuickQuiz
+        {/* Section 3: Categories */}
+        <section id="categories" className="max-w-5xl mx-auto">
+          <div className="text-center mb-16 md:mb-24">
+            <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 md:mb-6 block">Explore Subjects</span>
+            <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tight font-display mb-8">
+              Master Any Domain
             </h2>
+            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+              Our AI is trained on a vast corpus of academic and professional data, making it an expert across hundreds of disciplines.
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {[
-              { title: 'Save Hours of Time', desc: 'No more manual flashcard creation. Turn a 50-page chapter into a quiz in minutes.', icon: <Clock className="w-7 h-7 md:w-8 md:h-8" />, color: 'text-blue-600 bg-blue-50' },
-              { title: 'Eliminate Boredom', desc: 'Passive reading is tedious. Interactive quizzing keeps your brain engaged and alert.', icon: <Zap className="w-7 h-7 md:w-8 md:h-8" />, color: 'text-amber-600 bg-amber-50' },
-              { title: 'Identify Weak Spots', desc: 'Our analysis shows exactly where your gaps are, so you can focus your energy.', icon: <Search className="w-7 h-7 md:w-8 md:h-8" />, color: 'text-emerald-600 bg-emerald-50' },
-              { title: 'Boost Confidence', desc: 'Practice in a test-like environment to reduce anxiety and walk into finals prepared.', icon: <Target className="w-7 h-7 md:w-8 md:h-8" />, color: 'text-rose-600 bg-rose-50' },
-              { title: 'Learn on the Go', desc: 'Mobile-optimized and fast. Turn your commute into a productive study session.', icon: <Globe className="w-7 h-7 md:w-8 md:h-8" />, color: 'text-indigo-600 bg-indigo-50' },
-              { title: 'Scientific Foundation', desc: 'Built on active recall and spaced repetition, the most effective learning techniques.', icon: <BookOpen className="w-7 h-7 md:w-8 md:h-8" />, color: 'text-violet-600 bg-violet-50' }
-            ].map((benefit, i) => (
+              { title: 'STEM & Engineering', items: ['Physics', 'Calculus', 'Organic Chemistry', 'Data Structures'], icon: '🔬', color: 'bg-blue-50 border-blue-100 text-blue-700' },
+              { title: 'Medical & Life Sciences', items: ['Anatomy', 'Pharmacology', 'Genetics', 'Microbiology'], icon: '🧬', color: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
+              { title: 'Humanities & Social', items: ['World History', 'Philosophy', 'Sociology', 'Political Science'], icon: '🏛️', color: 'bg-amber-50 border-amber-100 text-amber-700' },
+              { title: 'Business & Finance', items: ['Microeconomics', 'Accounting', 'Marketing Strategy', 'Corporate Law'], icon: '📊', color: 'bg-indigo-50 border-indigo-100 text-indigo-700' },
+              { title: 'Languages & Arts', items: ['Linguistics', 'Art History', 'Music Theory', 'Creative Writing'], icon: '🎨', color: 'bg-rose-50 border-rose-100 text-rose-700' },
+              { title: 'Professional Skills', items: ['Project Management', 'Cybersecurity', 'Public Speaking', 'Ethics'], icon: '💼', color: 'bg-slate-100 border-slate-200 text-slate-700' }
+            ].map((cat, i) => (
               <motion.div 
-                key={i} 
+                key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] bg-white border border-slate-100 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group"
+                className={`p-8 md:p-10 rounded-[2.5rem] border-2 ${cat.color} hover:shadow-2xl transition-all duration-500 group`}
               >
-                <div className={`w-14 h-14 md:w-16 md:h-16 ${benefit.color} rounded-2xl flex items-center justify-center mb-6 md:mb-8 group-hover:scale-110 transition-transform duration-500`}>
-                  {benefit.icon}
-                </div>
-                <h3 className="text-lg md:text-xl font-black text-slate-900 mb-3 md:mb-4 font-display">{benefit.title}</h3>
-                <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed">{benefit.desc}</p>
+                <div className="text-4xl md:text-5xl mb-6 group-hover:scale-125 transition-transform duration-500 inline-block">{cat.icon}</div>
+                <h3 className="text-xl md:text-2xl font-black mb-6 font-display">{cat.title}</h3>
+                <ul className="space-y-3">
+                  {cat.items.map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3 font-bold text-sm md:text-base opacity-80">
+                      <div className="w-1.5 h-1.5 rounded-full bg-current opacity-40"></div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
           </div>
         </section>
 
-        {/* Categories */}
-        <section className="max-w-5xl mx-auto pb-20 md:pb-32">
-          <div className="bg-gradient-to-br from-blue-600 via-indigo-700 to-violet-800 p-8 md:p-20 rounded-[2.5rem] md:rounded-[4rem] text-white overflow-hidden relative shadow-2xl shadow-blue-500/20">
-            <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-white/10 rounded-full blur-[80px] md:blur-[100px]"></div>
+        {/* Section 4: Popular Quizzes */}
+        <section id="popular-quizzes" className="max-w-5xl mx-auto">
+          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-20 rounded-[2.5rem] md:rounded-[4rem] text-white overflow-hidden relative shadow-2xl">
+            <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-blue-500/10 rounded-full blur-[80px] md:blur-[100px]"></div>
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-black mb-6 md:mb-8 tracking-tight font-display">Diverse Learning Categories</h2>
-              <p className="text-blue-100 font-medium text-lg md:text-xl mb-10 md:mb-16 max-w-2xl leading-relaxed">
-                QuickQuiz is versatile enough to handle any subject matter. From technical sciences to the liberal arts, our AI understands the context.
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 md:mb-20">
+                <div className="max-w-xl">
+                  <span className="text-[8px] md:text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mb-4 block">Community Favorites</span>
+                  <h2 className="text-3xl md:text-5xl font-black tracking-tight font-display">Popular Study Paths</h2>
+                  <p className="text-slate-400 font-medium text-lg md:text-xl mt-6 leading-relaxed">
+                    Join thousands of other students who are currently mastering these high-demand topics.
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                   <div className="px-6 py-3 bg-white/5 rounded-2xl border border-white/10 text-center">
+                     <span className="block text-2xl font-black">1.2M+</span>
+                     <span className="text-[8px] uppercase font-black text-slate-500 tracking-widest">Questions Generated</span>
+                   </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 {[
-                  'STEM Subjects', 'Medical Science', 'Law & Ethics', 'Business & Finance',
-                  'Literature', 'History', 'Geography', 'Current Affairs',
-                  'Foreign Languages', 'Coding & Tech', 'Psychology', 'General Knowledge'
-                ].map((cat, i) => (
-                  <div key={i} className="px-4 md:px-6 py-3 md:py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl md:rounded-2xl text-[10px] md:text-sm font-black hover:bg-white/20 transition-all text-center uppercase tracking-widest flex items-center justify-center">
-                    {cat}
-                  </div>
+                  { title: 'The French Revolution', desc: 'Master the complex social and political upheaval of 18th century France.', count: '45k students', icon: '🇫🇷' },
+                  { title: 'Human Anatomy 101', desc: 'A deep dive into the skeletal and muscular systems of the human body.', count: '120k students', icon: '🦴' },
+                  { title: 'Intro to Quantum Physics', desc: 'Understanding the fundamental particles and forces that govern reality.', count: '32k students', icon: '⚛️' },
+                  { title: 'Modern Macroeconomics', desc: 'Analyze global markets, inflation, and fiscal policy in the 21st century.', count: '28k students', icon: '📈' },
+                  { title: 'Artificial Intelligence', desc: 'From neural networks to ethics: everything you need to know about AI.', count: '89k students', icon: '🤖' },
+                  { title: 'World War II History', desc: 'The definitive guide to the global conflict that shaped the modern world.', count: '64k students', icon: '🌍' }
+                ].map((quiz, i) => (
+                  <button 
+                    key={i}
+                    onClick={() => {
+                      setTopic(quiz.title);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="p-6 md:p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] text-left hover:bg-white/10 transition-all group flex items-start gap-6"
+                  >
+                    <div className="text-4xl md:text-5xl group-hover:scale-110 transition-transform">{quiz.icon}</div>
+                    <div>
+                      <h4 className="text-lg md:text-xl font-black text-white mb-2 font-display group-hover:text-blue-600 transition-colors">{quiz.title}</h4>
+                      <p className="text-slate-400 text-sm font-medium leading-relaxed mb-4">{quiz.desc}</p>
+                      <div className="flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                        <Target className="w-3 h-3" />
+                        {quiz.count}
+                      </div>
+                    </div>
+                  </button>
                 ))}
               </div>
-              <div className="mt-12 md:mt-20 pt-12 md:pt-20 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10 text-center md:text-left">
-                <div>
-                  <h4 className="text-xl md:text-2xl font-black mb-2 md:mb-3 font-display">Ready to start your journey?</h4>
-                  <p className="text-blue-100 font-medium text-base md:text-lg">Join thousands of students mastering their subjects today.</p>
-                </div>
-                <button 
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="w-full md:w-auto px-8 md:px-10 py-4 md:py-5 bg-white text-blue-700 font-black rounded-2xl hover:bg-blue-50 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3"
-                >
-                  Back to Top
-                  <ArrowRight className="w-5 h-5 -rotate-90" />
-                </button>
-              </div>
             </div>
+          </div>
+        </section>
+
+        {/* Section 5: How It Works - Detailed Breakdown */}
+        <section id="how-it-works" className="max-w-5xl mx-auto pb-20 md:pb-32">
+          <div className="text-center mb-16 md:mb-24">
+            <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 md:mb-6 block">The Workflow</span>
+            <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tight font-display mb-8">
+              From Notes to Mastery <br />in <span className="text-blue-600">Three Simple Steps</span>
+            </h2>
+          </div>
+
+          <div className="space-y-12 md:space-y-20">
+            {[
+              { 
+                step: '01', 
+                title: 'Input Your Material', 
+                desc: 'Whether you have a digital PDF, a physical textbook, or a messy pile of handwritten notes, QuickQuiz can handle it. Our advanced OCR technology reads through images with incredible precision, while our text-processing engine can ingest up to 10,000 characters at once. Simply paste your text or snap a photo using your mobile device\'s camera.',
+                details: 'We support a wide range of formats and styles. You can even provide a specific topic name to help the AI narrow down the context and generate more relevant questions.',
+                icon: <FileText className="w-10 h-10" />,
+                color: 'bg-blue-600'
+              },
+              { 
+                step: '02', 
+                title: 'AI Analysis & Generation', 
+                desc: 'Once your material is uploaded, our AI study engine goes to work. It doesn\'t just look for keywords; it performs a deep semantic analysis of the content. It identifies the core thesis, supporting evidence, key dates, and complex relationships within the text.',
+                details: 'The AI then crafts a comprehensive study package: a 300-word introductory article to prime your brain, a set of challenging multiple-choice questions, and a 300-word concluding summary. Every question is designed to test understanding, not just recognition.',
+                icon: <Sparkles className="w-10 h-10" />,
+                color: 'bg-indigo-600'
+              },
+              { 
+                step: '03', 
+                title: 'Active Practice & Review', 
+                desc: 'This is where the magic happens. You engage with the quiz, forcing your brain to retrieve the information you just read. If you get a question wrong, don\'t worry—our AI provides a detailed explanation for every single answer, helping you understand the "why" behind the correct choice.',
+                details: 'After the quiz, you receive a performance report highlighting your strengths and identifying specific "Weak Areas" that need more attention. You can export your results to JSON or CSV for long-term tracking or print them out for offline study.',
+                icon: <Target className="w-10 h-10" />,
+                color: 'bg-violet-600'
+              }
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col lg:flex-row gap-10 md:gap-20 items-center">
+                <div className="lg:w-1/2 space-y-6 md:space-y-8">
+                  <div className="flex items-center gap-6">
+                    <span className="text-5xl md:text-7xl font-black text-slate-100 font-display">{item.step}</span>
+                    <div className={`w-16 h-16 md:w-20 md:h-20 ${item.color} rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-current/20`}>
+                      {item.icon}
+                    </div>
+                  </div>
+                  <h3 className="text-2xl md:text-4xl font-black text-slate-900 font-display">{item.title}</h3>
+                  <p className="text-slate-600 text-lg md:text-xl font-medium leading-relaxed">
+                    {item.desc}
+                  </p>
+                  <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed italic border-l-4 border-slate-100 pl-6">
+                    {item.details}
+                  </p>
+                </div>
+                <div className="lg:w-1/2 w-full">
+                  <div className="aspect-video bg-slate-50 rounded-[2.5rem] border-2 border-slate-100 overflow-hidden relative group">
+                    <img 
+                      src={`https://picsum.photos/seed/step${i}/800/600`} 
+                      className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" 
+                      alt={item.title} 
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                    <div className="absolute bottom-8 left-8 right-8">
+                      <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl inline-block text-[10px] font-black text-white uppercase tracking-widest mb-2">
+                        Step {item.step} Preview
+                      </div>
+                      <p className="text-white/80 text-xs font-bold">Visualizing the {item.title.toLowerCase()} process.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-24 md:mt-40 pt-12 md:pt-20 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-6">
+              <div className="flex -space-x-4">
+                {[5, 6, 7, 8].map(i => (
+                  <img key={i} src={`https://picsum.photos/seed/user${i}/100/100`} className="w-12 h-12 rounded-full border-4 border-white shadow-lg" alt="User" referrerPolicy="no-referrer" />
+                ))}
+              </div>
+              <p className="text-slate-500 font-bold text-sm">Join 50,000+ active learners this week</p>
+            </div>
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="w-full md:w-auto px-10 py-5 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 transition-all shadow-2xl active:scale-95 flex items-center justify-center gap-3 text-lg"
+            >
+              Start Your Quiz Now
+              <ArrowRight className="w-5 h-5" />
+            </button>
           </div>
         </section>
       </div>

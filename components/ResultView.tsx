@@ -101,9 +101,16 @@ const ResultView: React.FC<ResultViewProps> = ({ quiz, result, onRetake, onNew }
                 </h3>
                 <div className="bg-slate-50 p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 relative group hover:bg-white hover:shadow-xl transition-all duration-500">
                   <div className="absolute -top-3 -left-3 md:-top-4 md:-left-4 w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center text-xl md:text-2xl border border-slate-100">📝</div>
-                  <p className="text-slate-600 text-base md:text-xl leading-relaxed font-medium italic">
+                  <p className="text-slate-600 text-base md:text-xl leading-relaxed font-medium italic mb-8">
                     "{quiz.notesSummary}"
                   </p>
+                  
+                  <div className="pt-8 border-t border-slate-200">
+                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4">Detailed Topic Review</h4>
+                    <div className="text-slate-600 text-base md:text-lg leading-relaxed whitespace-pre-wrap">
+                      {quiz.conclusionArticle}
+                    </div>
+                  </div>
                 </div>
               </div>
               
