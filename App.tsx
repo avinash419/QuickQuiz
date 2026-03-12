@@ -8,7 +8,7 @@ import StudyTipsModal from './components/StudyTipsModal';
 import Articles from './components/Articles';
 import StaticPage from './components/StaticPage';
 import { AppState, Quiz, QuizResult, Difficulty } from './types';
-import { generateQuiz, generateQuizFromImage } from './services/geminiService';
+import { generateQuiz, generateQuizFromImage } from './services/groqService';
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>('HOME');
@@ -109,7 +109,11 @@ const App: React.FC = () => {
         )}
 
         {appState === 'HOME' && (
-          <Home onGenerate={handleGenerate} onScan={handleScan} loading={loading} />
+          <Home 
+            onGenerate={handleGenerate} 
+            onScan={handleScan} 
+            loading={loading} 
+          />
         )}
 
         {appState === 'ARTICLES' && (
