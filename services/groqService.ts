@@ -1,5 +1,6 @@
 
 import Groq from "groq-sdk";
+import Tesseract from "tesseract.js";
 import { Quiz, Difficulty } from "../types";
 
 const groq = new Groq({ 
@@ -69,36 +70,22 @@ export const generateQuizFromImage = async (
   language: string = 'Hindi',
   topic?: string
 ): Promise<Quiz> => {
-  // Use a vision-capable model for images
-  const model = 'llama-3.2-11b-vision-preview';
+  // 1. Perform OCR using Tesseract.js
+  const { data: { text } } = await Tesseract.recognize(
+    `data:image/jpeg;base64,${base64Image}`,
+    'eng+hin', // Support both English and Hindi for OCR
+    { logger: m => console.log(m) }
+  );
 
-  const response = await groq.chat.completions.create({
-    model: model,
-    messages: [
-      { role: "system", content: QUIZ_SYSTEM_PROMPT },
-      { 
-        role: "user", 
-        content: [
-          {
-            type: "text",
-            text: `Analyze the study material in this image. 
-            ${topic ? `The topic is: ${topic}` : ''}
-            Generate a comprehensive study package in ${language} with ${numQuestions} questions at ${difficulty} difficulty.`
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/jpeg;base64,${base64Image}`
-            }
-          }
-        ]
-      }
-    ],
-    response_format: { type: "json_object" }
-  });
+  if (!text || text.trim().length < 10) {
+    throw new Error("Could not extract enough text from the image. Please try a clearer photo.");
+  }
 
-  const content = response.choices[0]?.message?.content;
-  if (!content) throw new Error("No content received from Groq");
-
-  return JSON.parse(content) as Quiz;
+  // 2. Generate quiz from extracted text using the fast text model
+  return generateQuiz(
+    `${topic ? `Topic: ${topic}\n\n` : ''}Extracted Text from Image:\n${text}`,
+    difficulty,
+    numQuestions,
+    language
+  );
 };
