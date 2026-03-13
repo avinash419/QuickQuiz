@@ -57,15 +57,15 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
           <Sparkles className="w-3 h-3 md:w-3.5 md:h-3.5" />
           The ultimate study companion
         </motion.div>
-        <motion.h2 
+        <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="text-3xl sm:text-4xl md:text-7xl font-black text-slate-900 mb-6 md:mb-8 tracking-tight leading-[1.2] md:leading-[1.1] font-display"
         >
-          Turn your notes into <br className="hidden sm:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600">Active Practice</span>
-        </motion.h2>
+          QuickQuiz – <br className="hidden sm:block" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600">AI Quiz Generator</span>
+        </motion.h1>
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -312,7 +312,7 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
             <div className="h-px flex-grow bg-slate-200"></div>
           </div>
           <h2 className="text-3xl md:text-6xl font-black text-slate-900 mb-8 md:mb-12 tracking-tight text-center font-display leading-tight">
-            The Vision Behind <br /><span className="text-blue-600">QuickQuiz AI</span>
+            QuickQuiz AI Quiz Generator from Notes
           </h2>
           <div className="prose prose-slate prose-base md:prose-lg max-w-none text-slate-600 font-medium leading-relaxed space-y-8">
             <p>
@@ -341,7 +341,7 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
               <div className="h-px flex-grow bg-white/10"></div>
             </div>
             <h2 className="text-3xl md:text-6xl font-black text-white mb-10 md:mb-16 tracking-tight font-display leading-tight">
-              Why Quizzing is the <br />Ultimate Learning Hack
+              QuickQuiz AI Study Assistant
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-start">
               <div className="space-y-8 text-slate-400 font-medium text-base md:text-lg leading-relaxed">
@@ -400,7 +400,7 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
           <div className="text-center mb-16 md:mb-24">
             <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 md:mb-6 block">Explore Subjects</span>
             <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tight font-display mb-8">
-              Master Any Domain
+              QuickQuiz Photo to Quiz Tool
             </h2>
             <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
               Our AI is trained on a vast corpus of academic and professional data, making it an expert across hundreds of disciplines.
@@ -498,7 +498,7 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
           <div className="text-center mb-16 md:mb-24">
             <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 md:mb-6 block">The Workflow</span>
             <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tight font-display mb-8">
-              From Notes to Mastery <br />in <span className="text-blue-600">Three Simple Steps</span>
+              QuickQuiz Online Quiz Maker for Students
             </h2>
           </div>
 
