@@ -9,9 +9,10 @@ interface HeaderProps {
   onShowArticles: () => void;
   onGoHome: () => void;
   onNavigate: (state: AppState) => void;
+  logoUrl?: string | null;
 }
 
-const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, onNavigate }) => {
+const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, onNavigate, logoUrl }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const navLinks = [
@@ -46,8 +47,12 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
             setIsMenuOpen(false);
           }}
         >
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 sm:p-2.5 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-all duration-300 group-hover:rotate-3">
-            <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 sm:p-2.5 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-all duration-300 group-hover:rotate-3 overflow-hidden flex items-center justify-center">
+            {logoUrl ? (
+              <img src={logoUrl} alt="QuickQuiz Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            )}
           </div>
           <div>
             <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-none font-display">QuickQuiz</h1>

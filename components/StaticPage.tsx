@@ -18,33 +18,17 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
           icon: <Info className="w-12 h-12 text-blue-600" />,
           content: (
             <div className="space-y-8 md:space-y-10">
-              <p className="text-lg md:text-2xl leading-relaxed text-slate-600 font-medium">QuickQuiz is an AI-powered study tool designed to help students and lifelong learners master any subject with ease. Our mission is to make learning more interactive, efficient, and fun.</p>
+              <p className="text-lg md:text-2xl leading-relaxed text-slate-600 font-medium">QuickQuiz is an AI quiz generator designed for students and teachers. Upload your notes, Books, or photos and our AI will analyze the content to generate quizzes automatically.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div className="bg-slate-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-slate-100">
-                  <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3 md:mb-4 font-display">Our Story</h3>
-                  <p className="text-slate-600 leading-relaxed text-sm md:text-base">Founded in 2024, QuickQuiz was born out of the frustration of passive learning. We realized that reading and highlighting aren't enough—active recall is the key to long-term retention.</p>
+                  <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3 md:mb-4 font-display">Our Mission</h3>
+                  <p className="text-slate-600 leading-relaxed text-sm md:text-base">QuickQuiz is an AI-powered study tool designed to help students and lifelong learners master any subject with ease. Our mission is to make learning more interactive, efficient, and fun.</p>
                 </div>
                 <div className="bg-blue-50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-blue-100">
                   <h3 className="text-xl md:text-2xl font-black text-blue-900 mb-3 md:mb-4 font-display">Our Vision</h3>
                   <p className="text-blue-800/80 leading-relaxed text-sm md:text-base">By leveraging the latest in AI technology, we've created a platform that turns your notes into personalized assessments in seconds, making high-quality education accessible to everyone.</p>
                 </div>
-              </div>
-
-              <h3 className="text-2xl md:text-3xl font-black text-slate-900 font-display">How It Works</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                {[
-                  { step: '01', title: 'Input', desc: 'Paste your notes or scan a photo of your textbook.' },
-                  { step: '02', title: 'Analyze', desc: 'Our AI identifies the key concepts and facts.' },
-                  { step: '03', title: 'Generate', desc: 'We create a high-quality quiz tailored to your material.' },
-                  { step: '04', title: 'Master', desc: 'Take the quiz, review explanations, and track progress.' }
-                ].map((item, i) => (
-                  <div key={i} className="p-5 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm">
-                    <span className="text-blue-600 font-black text-[10px] tracking-widest block mb-1 md:mb-2">{item.step}</span>
-                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1 md:mb-2">{item.title}</h4>
-                    <p className="text-slate-500 text-xs md:text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                ))}
               </div>
             </div>
           )

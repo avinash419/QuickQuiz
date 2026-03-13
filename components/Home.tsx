@@ -591,6 +591,21 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
         onClose={() => setIsScannerOpen(false)} 
         onCapture={handleCapturedImage} 
       />
+
+      {/* SEO Content Section */}
+      <section className="mt-24 md:mt-40 max-w-4xl mx-auto px-4 py-12 border-t border-slate-100">
+        <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-6 font-display">Create Online Tests Using AI | QuickQuiz</h2>
+        <p className="text-slate-600 text-lg md:text-xl font-medium leading-relaxed mb-8">
+          QuickQuiz is an AI-powered quiz generator that turns your notes, books, and images into ready-to-use quizzes instantly. 
+          Students and teachers can create practice tests, MCQs, and study quizzes in seconds using smart AI technology.
+        </p>
+        <button 
+          onClick={() => onGenerate('About QuickQuiz', Difficulty.MEDIUM, 1, 'English')}
+          className="text-blue-600 font-black flex items-center gap-2 hover:gap-4 transition-all"
+        >
+          Read more <ArrowRight className="w-5 h-5" />
+        </button>
+      </section>
     </div>
   );
 };
