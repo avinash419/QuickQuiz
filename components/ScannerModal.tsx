@@ -1,12 +1,13 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, Camera, RefreshCcw, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { ChevronLeft, Camera, RefreshCcw, ArrowRight, AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { performOCR } from '../services/groqService';
 
 interface ScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCapture: (base64: string) => void;
+  onCapture: (text: string) => void;
 }
 
 const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture }) => {
@@ -18,6 +19,9 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
   const [isFlashing, setIsFlashing] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [ocrStatus, setOcrStatus] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -32,6 +36,10 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
     setIsCameraReady(false);
     setIsInitializing(true);
     setError(null);
+    setCapturedImage(null);
+    setIsProcessing(false);
+    setOcrProgress(0);
+    setOcrStatus('');
     try {
       const constraints = {
         video: {
@@ -79,6 +87,7 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
     setCapturedImage(null);
     setIsCameraReady(false);
     setIsInitializing(false);
+    setIsProcessing(false);
   };
 
   const capturePhoto = () => {
@@ -105,10 +114,22 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
     }
   };
 
-  const handleUsePhoto = () => {
+  const handleUsePhoto = async () => {
     if (capturedImage) {
-      const base64 = capturedImage.split(',')[1];
-      onCapture(base64);
+      setIsProcessing(true);
+      setError(null);
+      try {
+        const base64 = capturedImage.split(',')[1];
+        const text = await performOCR(base64, (progress, status) => {
+          setOcrProgress(progress);
+          setOcrStatus(status);
+        });
+        onCapture(text);
+      } catch (err: any) {
+        console.error("OCR Error:", err);
+        setError(err.message || "Failed to extract text from image.");
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -126,7 +147,8 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
         <div className="p-4 md:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <button 
             onClick={onClose} 
-            className="p-2.5 md:p-3 bg-white hover:bg-slate-100 rounded-xl md:rounded-2xl transition-all border border-slate-200 text-slate-600 flex items-center gap-1.5 md:gap-2 font-black text-[10px] md:text-xs uppercase tracking-widest"
+            disabled={isProcessing}
+            className={`p-2.5 md:p-3 bg-white hover:bg-slate-100 rounded-xl md:rounded-2xl transition-all border border-slate-200 text-slate-600 flex items-center gap-1.5 md:gap-2 font-black text-[10px] md:text-xs uppercase tracking-widest ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
             Back
@@ -152,17 +174,68 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
                 <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-400">Initializing Camera...</p>
               </motion.div>
             )}
+
+            {isProcessing && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-30 flex flex-col items-center justify-center text-white bg-slate-900/90 backdrop-blur-xl p-8"
+              >
+                <div className="relative mb-8">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white/10 flex items-center justify-center">
+                    <Sparkles className="w-10 h-10 md:w-12 md:h-12 text-blue-500 animate-pulse" />
+                    <svg className="absolute inset-0 w-full h-full -rotate-90">
+                      <circle 
+                        cx="50%" cy="50%" r="46%" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="4" 
+                        className="text-white/10"
+                      />
+                      <circle 
+                        cx="50%" cy="50%" r="46%" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="4" 
+                        strokeDasharray="100"
+                        strokeDashoffset={100 - (ocrProgress * 100)}
+                        className="text-blue-500 transition-all duration-300"
+                        style={{ strokeDasharray: '289', strokeDashoffset: 289 - (289 * ocrProgress) }}
+                      />
+                    </svg>
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 bg-blue-600 text-[10px] font-black px-2 py-1 rounded-lg shadow-xl">
+                    {Math.round(ocrProgress * 100)}%
+                  </div>
+                </div>
+                
+                <h3 className="text-xl md:text-2xl font-black text-white mb-3 font-display">Analyzing Content</h3>
+                <p className="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] mb-8 text-center">
+                  {ocrStatus || 'Extracting text from image...'}
+                </p>
+
+                {/* Linear Progress Bar */}
+                <div className="w-full max-w-xs h-2 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${ocrProgress * 100}%` }}
+                    className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
+                  />
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
 
-          {error ? (
+          {error && !isProcessing ? (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 md:p-12 text-center bg-slate-900">
               <div className="bg-rose-500/20 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] mb-6 md:mb-8">
                 <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-rose-500" />
               </div>
-              <p className="font-black text-xl md:text-2xl text-white mb-3 md:mb-4 font-display">Camera Unavailable</p>
+              <p className="font-black text-xl md:text-2xl text-white mb-3 md:mb-4 font-display">Scanner Error</p>
               <p className="text-slate-400 text-base md:text-lg mb-8 md:mb-10 max-w-sm leading-relaxed">{error}</p>
               <button onClick={startCamera} className="px-8 md:px-10 py-3.5 md:py-4 bg-white text-slate-900 rounded-xl md:rounded-2xl font-black text-xs md:text-sm hover:bg-slate-100 transition-all active:scale-95">
-                Retry Connection
+                Try Again
               </button>
             </div>
           ) : capturedImage ? (
@@ -229,17 +302,28 @@ const ScannerModal: React.FC<ScannerModalProps> = ({ isOpen, onClose, onCapture 
             <div className="flex w-full gap-3 md:gap-4 max-w-lg mx-auto">
               <button 
                 onClick={() => setCapturedImage(null)}
-                className="flex-1 py-4 md:py-5 bg-slate-100 text-slate-700 font-black rounded-2xl md:rounded-[2rem] hover:bg-slate-200 transition-all flex items-center justify-center gap-2 md:gap-3 border border-slate-200 shadow-sm text-sm md:text-base"
+                disabled={isProcessing}
+                className={`flex-1 py-4 md:py-5 bg-slate-100 text-slate-700 font-black rounded-2xl md:rounded-[2rem] hover:bg-slate-200 transition-all flex items-center justify-center gap-2 md:gap-3 border border-slate-200 shadow-sm text-sm md:text-base ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <RefreshCcw className="w-4 h-4 md:w-5 md:h-5" />
                 Retake
               </button>
               <button 
                 onClick={handleUsePhoto}
-                className="flex-[2] py-4 md:py-5 bg-blue-600 text-white font-black rounded-2xl md:rounded-[2rem] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-600/20 flex items-center justify-center gap-2 md:gap-3 text-base md:text-lg"
+                disabled={isProcessing}
+                className={`flex-[2] py-4 md:py-5 bg-blue-600 text-white font-black rounded-2xl md:rounded-[2rem] hover:bg-blue-700 transition-all shadow-2xl shadow-blue-600/20 flex items-center justify-center gap-2 md:gap-3 text-base md:text-lg ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Analyze Notes
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Analyze Notes
+                    <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+                  </>
+                )}
               </button>
             </div>
           )}

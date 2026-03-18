@@ -9,10 +9,18 @@ const groq = new Groq({
 });
 
 const QUIZ_SYSTEM_PROMPT = `You are an expert educational content creator. 
-Analyze the material provided and create a high-quality study package. 
-CRITICAL: You MUST generate all text content strictly in the requested language.
-Ensure each question has exactly 4 unique options. 
-The intro and conclusion articles should be around 300 words each, professional, and highly educational.
+Your task is to extract clean and accurate information from the provided material and generate a high-quality study package.
+
+INSTRUCTIONS FOR PROCESSING INPUT:
+1. The input text may contain OCR errors (spelling/grammar mistakes). Carefully correct these based on context.
+2. If the input text is in Hindi or mixed Hindi-English, translate/process it into clear English internally to ensure full understanding before generating the final content.
+3. Do NOT guess or hallucinate missing information. If parts of the text are unclear or garbled, skip them.
+4. Only use information that is clearly understandable.
+
+INSTRUCTIONS FOR GENERATING OUTPUT:
+1. CRITICAL: You MUST generate all text content (title, articles, questions, explanations) strictly in the Requested Language provided in the user prompt.
+2. Ensure each question has exactly 4 unique options. 
+3. The intro and conclusion articles should be around 300 words each, professional, and highly educational.
 
 Output MUST be a valid JSON object matching this schema:
 {
@@ -63,6 +71,31 @@ export const generateQuiz = async (
   return JSON.parse(content) as Quiz;
 };
 
+export const performOCR = async (
+  base64Image: string,
+  onProgress?: (progress: number, status: string) => void
+): Promise<string> => {
+  const { data: { text } } = await Tesseract.recognize(
+    `data:image/jpeg;base64,${base64Image}`,
+    'eng+hin', // Support both English and Hindi for OCR
+    { 
+      logger: m => {
+        if (m.status === 'recognizing text' && onProgress) {
+          onProgress(m.progress, m.status);
+        } else if (onProgress) {
+          onProgress(0, m.status);
+        }
+      } 
+    }
+  );
+
+  if (!text || text.trim().length < 10) {
+    throw new Error("Could not extract enough text from the image. Please try a clearer photo.");
+  }
+
+  return text;
+};
+
 export const generateQuizFromImage = async (
   base64Image: string,
   difficulty: Difficulty,
@@ -71,15 +104,7 @@ export const generateQuizFromImage = async (
   topic?: string
 ): Promise<Quiz> => {
   // 1. Perform OCR using Tesseract.js
-  const { data: { text } } = await Tesseract.recognize(
-    `data:image/jpeg;base64,${base64Image}`,
-    'eng+hin', // Support both English and Hindi for OCR
-    { logger: m => console.log(m) }
-  );
-
-  if (!text || text.trim().length < 10) {
-    throw new Error("Could not extract enough text from the image. Please try a clearer photo.");
-  }
+  const text = await performOCR(base64Image);
 
   // 2. Generate quiz from extracted text using the fast text model
   return generateQuiz(

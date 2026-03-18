@@ -78,17 +78,18 @@ const App: React.FC = () => {
     }
   };
 
-  const handleScan = async (base64: string, difficulty: Difficulty, count: number, language: string, topic?: string) => {
+  const handleScan = async (text: string, difficulty: Difficulty, count: number, language: string, topic?: string) => {
     setAppState('GENERATING');
     setLoading(true);
     setError(null);
     try {
-      const generatedQuiz = await generateQuizFromImage(base64, difficulty, count, language, topic);
+      const fullNotes = topic ? `Topic: ${topic}\n\nExtracted Text:\n${text}` : text;
+      const generatedQuiz = await generateQuiz(fullNotes, difficulty, count, language);
       setQuiz(generatedQuiz);
       setAppState('QUIZ');
     } catch (err) {
       console.error("Scanning quiz generation failed", err);
-      setError("Failed to process scan. Ensure the photo is clear and contains text.");
+      setError("Failed to generate quiz from scanned text. Please try again.");
       setAppState('HOME');
     } finally {
       setLoading(false);

@@ -7,7 +7,7 @@ import { motion } from 'motion/react';
 
 interface HomeProps {
   onGenerate: (notes: string, difficulty: Difficulty, count: number, language: string) => void;
-  onScan: (base64: string, difficulty: Difficulty, count: number, language: string, topic?: string) => void;
+  onScan: (text: string, difficulty: Difficulty, count: number, language: string, topic?: string) => void;
   onCurrentAffairs: (count: number, language: string, difficulty: Difficulty) => void;
   loading: boolean;
 }
@@ -41,9 +41,9 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, onCurrentAffairs, loadi
     onGenerate(fullNotes, difficulty, count, language);
   };
 
-  const handleCapturedImage = (base64: string) => {
+  const handleCapturedImage = (text: string) => {
     setIsScannerOpen(false);
-    onScan(base64, difficulty, count, language, topic);
+    onScan(text, difficulty, count, language, topic);
   };
 
   return (
