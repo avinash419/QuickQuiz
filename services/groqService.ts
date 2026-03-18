@@ -89,3 +89,35 @@ export const generateQuizFromImage = async (
     language
   );
 };
+
+export const generateCurrentAffairsQuiz = async (
+  numQuestions: number,
+  language: string = 'Hindi',
+  difficulty: Difficulty = Difficulty.MEDIUM
+): Promise<Quiz> => {
+  const currentDate = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  const model = 'llama-3.3-70b-versatile';
+
+  const response = await groq.chat.completions.create({
+    model: model,
+    messages: [
+      { role: "system", content: QUIZ_SYSTEM_PROMPT },
+      { 
+        role: "user", 
+        content: `Please generate a comprehensive study package for Daily India Current Affairs.
+        Date: ${currentDate}
+        Requested Language: ${language}
+        Difficulty: ${difficulty}
+        Number of questions: ${numQuestions}
+        
+        Focus on the latest news, events, government schemes, sports, and economy related to India from the last 24-48 hours.`
+      }
+    ],
+    response_format: { type: "json_object" }
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No content received from Groq");
+
+  return JSON.parse(content) as Quiz;
+};

@@ -8,7 +8,7 @@ import StudyTipsModal from './components/StudyTipsModal';
 import Articles from './components/Articles';
 import StaticPage from './components/StaticPage';
 import { AppState, Quiz, QuizResult, Difficulty } from './types';
-import { generateQuiz, generateQuizFromImage } from './services/groqService';
+import { generateQuiz, generateQuizFromImage, generateCurrentAffairsQuiz } from './services/groqService';
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>('HOME');
@@ -95,6 +95,23 @@ const App: React.FC = () => {
     }
   };
 
+  const handleCurrentAffairs = async (count: number, language: string, difficulty: Difficulty) => {
+    setAppState('GENERATING');
+    setLoading(true);
+    setError(null);
+    try {
+      const generatedQuiz = await generateCurrentAffairsQuiz(count, language, difficulty);
+      setQuiz(generatedQuiz);
+      setAppState('QUIZ');
+    } catch (err) {
+      console.error("Current affairs generation failed", err);
+      setError("Failed to generate current affairs quiz. Please try again later.");
+      setAppState('HOME');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleFinishQuiz = (quizResult: QuizResult) => {
     setResult(quizResult);
     setAppState('RESULT');
@@ -156,6 +173,7 @@ const App: React.FC = () => {
           <Home 
             onGenerate={handleGenerate} 
             onScan={handleScan} 
+            onCurrentAffairs={handleCurrentAffairs}
             loading={loading} 
           />
         )}

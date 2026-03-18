@@ -8,10 +8,11 @@ import { motion } from 'motion/react';
 interface HomeProps {
   onGenerate: (notes: string, difficulty: Difficulty, count: number, language: string) => void;
   onScan: (base64: string, difficulty: Difficulty, count: number, language: string, topic?: string) => void;
+  onCurrentAffairs: (count: number, language: string, difficulty: Difficulty) => void;
   loading: boolean;
 }
 
-const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
+const Home: React.FC<HomeProps> = ({ onGenerate, onScan, onCurrentAffairs, loading }) => {
   const [notes, setNotes] = useState('');
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.MEDIUM);
@@ -75,6 +76,46 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, loading }) => {
           Paste your material or <b>scan a page</b> and watch AI transform it into a professional quiz in seconds. 
         </motion.p>
       </div>
+
+      {/* Daily Current Affairs Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="mb-12 md:mb-16"
+      >
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-8 md:p-10 border border-slate-700 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] group-hover:bg-blue-500/20 transition-all duration-700"></div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest">
+                <Clock className="w-3 h-3" />
+                Updated Daily
+              </div>
+              <h2 className="text-2xl md:text-3xl font-black text-white mb-3 font-display">Daily India Current Affairs</h2>
+              <p className="text-slate-400 font-medium text-sm md:text-base max-w-md">
+                Master the latest news and events from across India. Perfect for UPSC, SSC, and competitive exams.
+              </p>
+            </div>
+            <div className="flex flex-col gap-4 w-full md:w-auto">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-center md:text-left">Select Quiz Length</p>
+              <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                {[5, 10, 20].map((qCount) => (
+                  <button
+                    key={qCount}
+                    onClick={() => onCurrentAffairs(qCount, language, difficulty)}
+                    disabled={loading}
+                    className="px-6 py-3 bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-500 rounded-2xl text-white font-black text-sm transition-all active:scale-95 flex items-center gap-2 group/btn disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {qCount} Questions
+                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       <div className="relative">
         {/* Decorative Blobs */}
