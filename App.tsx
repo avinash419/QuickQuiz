@@ -17,7 +17,49 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isTipsOpen, setIsTipsOpen] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string | null>('/logo.png');
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // SEO Rotation Logic
+  useEffect(() => {
+    const headlines = [
+      "Quick Quiz Questions & Answers",
+      "Practice Quick Quiz Online",
+      "Daily Quiz Questions Free",
+      "Test Your Knowledge Fast",
+      "Quick Answer Quiz Practice",
+      "Online Quiz with Answers",
+      "Free Quiz Questions Daily",
+      "Best Quick Quiz Website",
+      "Learn with Quick Quiz",
+      "Easy Quiz Questions Online"
+    ];
+
+    const descriptions = [
+      "Practice quick quiz questions and answers online. Improve your knowledge with daily quizzes for free.",
+      "Take quick quizzes with answers and test your knowledge instantly. Simple and fast learning platform.",
+      "Explore a wide range of quiz questions with answers. Perfect for students and learners.",
+      "Join QuickQuiz and practice daily quiz questions with instant answers and explanations."
+    ];
+
+    let headlineIndex = 0;
+    let descriptionIndex = 0;
+
+    const interval = setInterval(() => {
+      // Rotate Headline
+      headlineIndex = (headlineIndex + 1) % headlines.length;
+      const nextHeadline = (headlineIndex + 1) % headlines.length;
+      document.title = `${headlines[headlineIndex]} – ${headlines[nextHeadline]}`;
+
+      // Rotate Description
+      descriptionIndex = (descriptionIndex + 1) % descriptions.length;
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', descriptions[descriptionIndex]);
+      }
+    }, 10000); // Rotate every 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleGenerate = async (notes: string, difficulty: Difficulty, count: number, language: string) => {
     setAppState('GENERATING');
@@ -128,15 +170,13 @@ const App: React.FC = () => {
               <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
               <div className="absolute inset-4 bg-indigo-500/20 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 md:w-24 md:h-24 bg-white rounded-2xl md:rounded-3xl shadow-2xl flex items-center justify-center animate-bounce overflow-hidden border border-slate-100">
+                <div className="w-12 h-12 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl flex items-center justify-center animate-bounce overflow-hidden">
                   {logoUrl ? (
                     <img src={logoUrl} alt="QuickQuiz Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
-                      <svg className="w-6 h-6 md:w-12 md:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                      </svg>
-                    </div>
+                    <svg className="w-6 h-6 md:w-12 md:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
                   )}
                 </div>
               </div>
@@ -181,15 +221,13 @@ const App: React.FC = () => {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md overflow-hidden border border-slate-100">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
                 {logoUrl ? (
                   <img src={logoUrl} alt="QuickQuiz Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                 ) : (
-                  <div className="w-full h-full bg-blue-600 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  </div>
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
                 )}
               </div>
               <span className="text-xl font-black text-slate-900 tracking-tight">QuickQuiz</span>

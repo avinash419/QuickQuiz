@@ -47,13 +47,11 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
             setIsMenuOpen(false);
           }}
         >
-          <div className="bg-white p-1 rounded-xl shadow-lg shadow-blue-500/10 group-hover:scale-110 transition-all duration-300 group-hover:rotate-3 overflow-hidden flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 border border-slate-100">
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 sm:p-2.5 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-all duration-300 group-hover:rotate-3 overflow-hidden flex items-center justify-center">
             {logoUrl ? (
               <img src={logoUrl} alt="QuickQuiz Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             )}
           </div>
           <div>
