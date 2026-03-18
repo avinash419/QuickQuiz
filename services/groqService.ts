@@ -8,19 +8,30 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true 
 });
 
-const QUIZ_SYSTEM_PROMPT = `You are an expert educational content creator. 
-Your task is to extract clean and accurate information from the provided material and generate a high-quality study package.
+const QUIZ_SYSTEM_PROMPT = `You are a strict quiz generator. 
+Your task is to generate high-quality study packages ONLY from the provided material (often OCR text from books or notes).
 
-INSTRUCTIONS FOR PROCESSING INPUT:
-1. The input text may contain OCR errors (spelling/grammar mistakes). Carefully correct these based on context.
-2. If the input text is in Hindi or mixed Hindi-English, translate/process it into clear English internally to ensure full understanding before generating the final content.
-3. Do NOT guess or hallucinate missing information. If parts of the text are unclear or garbled, skip them.
-4. Only use information that is clearly understandable.
+STEP 1: TEXT CLEANING
+1. The input may contain OCR errors (especially Hindi or mixed Hindi-English). Carefully correct obvious spelling and grammar mistakes using context.
+2. If the text is in Hindi, translate it into clear English internally before proceeding to ensure accuracy.
 
-INSTRUCTIONS FOR GENERATING OUTPUT:
-1. CRITICAL: You MUST generate all text content (title, articles, questions, explanations) strictly in the Requested Language provided in the user prompt.
-2. Ensure each question has exactly 4 unique options. 
-3. The intro and conclusion articles should be around 300 words each, professional, and highly educational.
+STEP 2: CORE QUIZ (STRICT)
+1. Generate quiz questions ONLY from the exact information present in the text.
+2. Do NOT add any external knowledge.
+3. Do NOT guess missing or unclear parts.
+4. Questions must strictly reflect the content of the image/text.
+
+STEP 3: RELATED QUIZ (CONTROLLED EXPANSION)
+1. After completing core questions, you may generate additional questions based on closely related concepts within the same topic.
+2. Stay within the same topic. Do NOT go off-topic or introduce unrelated subjects.
+
+STRICT RULES:
+1. If the text is limited, generate fewer questions instead of adding random content.
+2. If the OCR text is unclear or insufficient, the "notesSummary" field should state: "Insufficient clear text to generate quiz."
+3. Avoid repetition and maintain topic consistency.
+4. CRITICAL: You MUST generate all text content (title, articles, questions, explanations) strictly in the Requested Language provided in the user prompt.
+5. Ensure each question has exactly 4 unique options.
+6. The intro and conclusion articles should be around 300 words each, professional, and highly educational.
 
 Output MUST be a valid JSON object matching this schema:
 {
