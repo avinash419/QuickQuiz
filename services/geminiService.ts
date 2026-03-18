@@ -8,16 +8,8 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true 
 });
 
-const QUIZ_SYSTEM_PROMPT = `You are a strict OCR-based quiz generator. 
+const QUIZ_SYSTEM_PROMPT = `You are a strict quiz generator. 
 Your task is to generate high-quality study packages ONLY from the provided material (often OCR text from books or notes).
-
-ABSOLUTE RULES:
-1. ONLY use the provided text. Do NOT use any external knowledge.
-2. Do NOT guess missing or unclear parts. Do NOT add information.
-3. Do NOT go off-topic. Do NOT create questions beyond the text.
-4. Extract only clear facts from the text and convert them into simple MCQ questions.
-5. Each question must match directly with the text and MUST include exact words from the text.
-6. Every question must be verifiable by looking at the provided text.
 
 STEP 1: TEXT CLEANING
 1. The input may contain OCR errors (especially Hindi or mixed Hindi-English). Carefully correct obvious spelling and grammar mistakes using context.
@@ -25,16 +17,21 @@ STEP 1: TEXT CLEANING
 
 STEP 2: CORE QUIZ (STRICT)
 1. Generate quiz questions ONLY from the exact information present in the text.
-2. Questions must strictly reflect the content of the image/text and MUST use exact words from the source text.
-3. Every question must be verifiable by looking at the provided text.
+2. Do NOT add any external knowledge.
+3. Do NOT guess missing or unclear parts.
+4. Questions must strictly reflect the content of the image/text.
+
+STEP 3: RELATED QUIZ (CONTROLLED EXPANSION)
+1. After completing core questions, you may generate additional questions based on closely related concepts within the same topic.
+2. Stay within the same topic. Do NOT go off-topic or introduce unrelated subjects.
 
 STRICT RULES:
 1. If the text is limited, generate fewer questions instead of adding random content.
-2. If the OCR text is unclear or insufficient, the "notesSummary" field MUST state: "Not enough valid text to create quiz."
+2. If the OCR text is unclear or insufficient, the "notesSummary" field should state: "Insufficient clear text to generate quiz."
 3. Avoid repetition and maintain topic consistency.
 4. CRITICAL: You MUST generate all text content (title, articles, questions, explanations) strictly in the Requested Language provided in the user prompt.
 5. Ensure each question has exactly 4 unique options.
-6. The intro and conclusion articles should be around 300 words each, professional, and highly educational, but MUST be based strictly on the provided text.
+6. The intro and conclusion articles should be around 300 words each, professional, and highly educational.
 
 Output MUST be a valid JSON object matching this schema:
 {
@@ -53,31 +50,13 @@ Output MUST be a valid JSON object matching this schema:
   "conclusionArticle": "string (approx 300 words)"
 }`;
 
-export const cleanOCRText = async (text: string): Promise<string> => {
-  const response = await groq.chat.completions.create({
-    model: 'llama3-70b-8192',
-    messages: [
-      { 
-        role: "system", 
-        content: "You are an expert text cleaner. Your job is to take messy OCR text and return a clean, corrected version. Fix spelling, grammar, and formatting. If the text is in Hindi, keep it in Hindi but correct the errors. If it's mixed, keep it mixed but clean. Do NOT add any information. ONLY return the cleaned text." 
-      },
-      { role: "user", content: text }
-    ],
-    temperature: 0.1,
-    top_p: 0.1,
-    max_tokens: 1000
-  });
-
-  return response.choices[0]?.message?.content || text;
-};
-
 export const generateQuiz = async (
   notes: string,
   difficulty: Difficulty,
   numQuestions: number,
   language: string = 'Hindi'
 ): Promise<Quiz> => {
-  const model = 'llama3-70b-8192';
+  const model = 'llama-3.3-70b-versatile';
 
   const response = await groq.chat.completions.create({
     model: model,
@@ -94,37 +73,13 @@ export const generateQuiz = async (
         ${notes.substring(0, 8000)}`
       }
     ],
-    temperature: 0.1,
-    top_p: 0.1,
-    max_tokens: 800,
     response_format: { type: "json_object" }
   });
 
   const content = response.choices[0]?.message?.content;
-  if (!content) throw new Error("Regenerating quiz...");
+  if (!content) throw new Error("No content received from Groq");
 
   return JSON.parse(content) as Quiz;
-};
-
-export const validateQuiz = (quiz: Quiz): boolean => {
-  // Reject if the AI explicitly stated there wasn't enough valid text
-  if (quiz.notesSummary.includes("Not enough valid text to create quiz.")) {
-    return false;
-  }
-
-  // Reject if no questions were generated
-  if (!quiz.questions || quiz.questions.length === 0) {
-    return false;
-  }
-
-  // Reject if any question is malformed (e.g., missing options)
-  for (const q of quiz.questions) {
-    if (!q.question || !q.options || q.options.length !== 4 || q.correctAnswer === undefined) {
-      return false;
-    }
-  }
-
-  return true;
 };
 
 export const performOCR = async (
@@ -177,7 +132,7 @@ export const generateCurrentAffairsQuiz = async (
   difficulty: Difficulty = Difficulty.MEDIUM
 ): Promise<Quiz> => {
   const currentDate = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-  const model = 'llama3-70b-8192';
+  const model = 'llama-3.3-70b-versatile';
 
   const response = await groq.chat.completions.create({
     model: model,
@@ -194,14 +149,11 @@ export const generateCurrentAffairsQuiz = async (
         Focus on the latest news, events, government schemes, sports, and economy related to India from the last 24-48 hours.`
       }
     ],
-    temperature: 0.1,
-    top_p: 0.1,
-    max_tokens: 800,
     response_format: { type: "json_object" }
   });
 
   const content = response.choices[0]?.message?.content;
-  if (!content) throw new Error("Regenerating quiz...");
+  if (!content) throw new Error("No content received from Groq");
 
   return JSON.parse(content) as Quiz;
 };

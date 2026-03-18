@@ -8,7 +8,7 @@ import StudyTipsModal from './components/StudyTipsModal';
 import Articles from './components/Articles';
 import StaticPage from './components/StaticPage';
 import { AppState, Quiz, QuizResult, Difficulty } from './types';
-import { generateQuiz, generateQuizFromImage, generateCurrentAffairsQuiz } from './services/groqService';
+import { generateQuiz, generateCurrentAffairsQuiz, validateQuiz, cleanOCRText } from './services/groqService';
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>('HOME');
@@ -65,52 +65,128 @@ const App: React.FC = () => {
     setAppState('GENERATING');
     setLoading(true);
     setError(null);
-    try {
-      const generatedQuiz = await generateQuiz(notes, difficulty, count, language);
-      setQuiz(generatedQuiz);
-      setAppState('QUIZ');
-    } catch (err) {
-      console.error("Quiz generation failed", err);
-      setError("Failed to generate quiz. Please check your notes or try again later.");
-      setAppState('HOME');
-    } finally {
-      setLoading(false);
+    
+    let attempts = 0;
+    const maxAttempts = 2;
+
+    const attemptGeneration = async (): Promise<boolean> => {
+      try {
+        const generatedQuiz = await generateQuiz(notes, difficulty, count, language);
+        
+        // Validate the generated quiz
+        if (!validateQuiz(generatedQuiz)) {
+          return false;
+        }
+
+        setQuiz(generatedQuiz);
+        setAppState('QUIZ');
+        return true;
+      } catch (err) {
+        console.error("Quiz generation attempt failed", err);
+        return false;
+      }
+    };
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      const success = await attemptGeneration();
+      if (success) return;
+      
+      if (attempts < maxAttempts) {
+        console.log(`Attempt ${attempts} failed. Retrying...`);
+      }
     }
+
+    setError("Regenerating quiz...");
+    setAppState('HOME');
+    setLoading(false);
   };
 
   const handleScan = async (text: string, difficulty: Difficulty, count: number, language: string, topic?: string) => {
     setAppState('GENERATING');
     setLoading(true);
     setError(null);
-    try {
-      const fullNotes = topic ? `Topic: ${topic}\n\nExtracted Text:\n${text}` : text;
-      const generatedQuiz = await generateQuiz(fullNotes, difficulty, count, language);
-      setQuiz(generatedQuiz);
-      setAppState('QUIZ');
-    } catch (err) {
-      console.error("Scanning quiz generation failed", err);
-      setError("Failed to generate quiz from scanned text. Please try again.");
-      setAppState('HOME');
-    } finally {
-      setLoading(false);
+    
+    let attempts = 0;
+    const maxAttempts = 2;
+
+    const attemptGeneration = async (): Promise<boolean> => {
+      try {
+        // 1. Clean the OCR text first
+        const cleanedText = await cleanOCRText(text);
+        
+        // 2. Generate the quiz from cleaned text
+        const fullNotes = topic ? `Topic: ${topic}\n\nExtracted Text:\n${cleanedText}` : cleanedText;
+        const generatedQuiz = await generateQuiz(fullNotes, difficulty, count, language);
+        
+        // 3. Validate the generated quiz
+        if (!validateQuiz(generatedQuiz)) {
+          return false;
+        }
+
+        setQuiz(generatedQuiz);
+        setAppState('QUIZ');
+        return true;
+      } catch (err) {
+        console.error("Quiz generation attempt failed", err);
+        return false;
+      }
+    };
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      const success = await attemptGeneration();
+      if (success) return;
+      
+      if (attempts < maxAttempts) {
+        console.log(`Attempt ${attempts} failed. Retrying...`);
+      }
     }
+
+    setError("Regenerating quiz...");
+    setAppState('HOME');
+    setLoading(false);
   };
 
   const handleCurrentAffairs = async (count: number, language: string, difficulty: Difficulty) => {
     setAppState('GENERATING');
     setLoading(true);
     setError(null);
-    try {
-      const generatedQuiz = await generateCurrentAffairsQuiz(count, language, difficulty);
-      setQuiz(generatedQuiz);
-      setAppState('QUIZ');
-    } catch (err) {
-      console.error("Current affairs generation failed", err);
-      setError("Failed to generate current affairs quiz. Please try again later.");
-      setAppState('HOME');
-    } finally {
-      setLoading(false);
+    
+    let attempts = 0;
+    const maxAttempts = 2;
+
+    const attemptGeneration = async (): Promise<boolean> => {
+      try {
+        const generatedQuiz = await generateCurrentAffairsQuiz(count, language, difficulty);
+        
+        // Validate the generated quiz
+        if (!validateQuiz(generatedQuiz)) {
+          return false;
+        }
+
+        setQuiz(generatedQuiz);
+        setAppState('QUIZ');
+        return true;
+      } catch (err) {
+        console.error("Current affairs generation attempt failed", err);
+        return false;
+      }
+    };
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      const success = await attemptGeneration();
+      if (success) return;
+      
+      if (attempts < maxAttempts) {
+        console.log(`Attempt ${attempts} failed. Retrying...`);
+      }
     }
+
+    setError("Regenerating quiz...");
+    setAppState('HOME');
+    setLoading(false);
   };
 
   const handleFinishQuiz = (quizResult: QuizResult) => {
