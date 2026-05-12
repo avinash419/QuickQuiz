@@ -1,32 +1,30 @@
 
-import React from 'react';
-import { BookOpen, Lightbulb, Menu, X, GraduationCap, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AppState } from '../types';
+import { GraduationCap, Lightbulb, Menu, X, ArrowRight, BookOpen, Target, Zap, FileText, Sparkles, Clock, ChevronLeft } from 'lucide-react';
 
 interface HeaderProps {
   onShowTips: () => void;
   onShowArticles: () => void;
   onGoHome: () => void;
-  onNavigate: (state: AppState) => void;
-  logoUrl?: string | null;
+  onNavigate: (page: string) => void;
+  logoUrl?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, onNavigate, logoUrl }) => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navLinks = [
-    { label: 'Home', action: onGoHome },
-    { label: 'GK Quiz', action: () => onNavigate('GK_QUIZ') },
-    { label: 'Science Quiz', action: () => onNavigate('SCIENCE_QUIZ') },
-    { label: 'History Quiz', action: () => onNavigate('HISTORY_QUIZ') },
-    { label: 'Blog', action: onShowArticles },
-    { label: 'About', action: () => onNavigate('ABOUT') },
-    { label: 'Contact', action: () => onNavigate('CONTACT') },
+  const navItems = [
+    { label: "Home", action: onGoHome },
+    { label: "GK Quiz", action: () => onNavigate("GK_QUIZ") },
+    { label: "Science Quiz", action: () => onNavigate("SCIENCE_QUIZ") },
+    { label: "History Quiz", action: () => onNavigate("HISTORY_QUIZ") },
+    { label: "Blog", action: onShowArticles },
+    { label: "About", action: () => onNavigate("ABOUT") },
+    { label: "Contact", action: () => onNavigate("CONTACT") }
   ];
 
-  // Prevent body scroll when menu is open
-  React.useEffect(() => {
+  useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -42,10 +40,7 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div 
           className="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0"
-          onClick={() => {
-            onGoHome();
-            setIsMenuOpen(false);
-          }}
+          onClick={() => { onGoHome(); setIsMenuOpen(false); }}
         >
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 sm:p-2.5 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-all duration-300 group-hover:rotate-3 overflow-hidden flex items-center justify-center">
             {logoUrl ? (
@@ -59,15 +54,15 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
             <p className="text-[8px] sm:text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] mt-0.5 sm:mt-1">AI Study Engine</p>
           </div>
         </div>
-        
+
         <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-bold text-slate-600">
-          {navLinks.map((link) => (
+          {navItems.map((item) => (
             <button
-              key={link.label}
-              onClick={(e) => { e.preventDefault(); link.action(); }}
+              key={item.label}
+              onClick={(e) => { e.preventDefault(); item.action(); }}
               className="px-4 py-2 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-all duration-200"
             >
-              {link.label}
+              {item.label}
             </button>
           ))}
         </nav>
@@ -91,7 +86,6 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -103,10 +97,10 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
               className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[60] lg:hidden"
             />
             <motion.div 
-              initial={{ x: '100%' }}
+              initial={{ x: "100%" }}
               animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className="fixed top-0 right-0 h-[100dvh] w-[300px] bg-white z-[70] lg:hidden shadow-2xl flex flex-col"
             >
               <div className="p-6 border-b border-slate-100 flex items-center justify-between">
@@ -116,19 +110,16 @@ const Header: React.FC<HeaderProps> = ({ onShowTips, onShowArticles, onGoHome, o
                 </button>
               </div>
               <div className="p-4 flex-grow overflow-y-auto">
-                {navLinks.map((link, i) => (
+                {navItems.map((item, index) => (
                   <motion.button
+                    key={item.label}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    key={link.label}
-                    onClick={() => { 
-                      link.action(); 
-                      setIsMenuOpen(false);
-                    }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => { item.action(); setIsMenuOpen(false); }}
                     className="w-full text-left px-5 py-4 rounded-2xl font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all mb-2 flex items-center justify-between group"
                   >
-                    {link.label}
+                    {item.label}
                     <ArrowRight className="w-4 h-4 opacity-40 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                   </motion.button>
                 ))}

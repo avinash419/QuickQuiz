@@ -1,356 +1,205 @@
 
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import Home from './components/Home';
-import QuizPlayer from './components/QuizPlayer';
-import ResultView from './components/ResultView';
-import StudyTipsModal from './components/StudyTipsModal';
-import Articles from './components/Articles';
-import StaticPage from './components/StaticPage';
-import { AppState, Quiz, QuizResult, Difficulty } from './types';
-import { generateQuiz, generateCurrentAffairsQuiz, validateQuiz, cleanOCRText } from './services/groqService';
+import Header from './src/components/Header';
+import Home from './src/components/Home';
+import Quiz from './src/components/Quiz';
+import Result from './src/components/Result';
+import { QuizData, QuizResult, Difficulty } from './src/types';
+import { motion, AnimatePresence } from 'motion/react';
+import { Loader2, AlertCircle, RefreshCcw } from 'lucide-react';
+import { generateQuiz, generateCurrentAffairs } from './src/services/aiService';
 
 const App: React.FC = () => {
-  const [appState, setAppState] = useState<AppState>('HOME');
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
-  const [result, setResult] = useState<QuizResult | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<"HOME" | "QUIZ" | "RESULT">("HOME");
+  const [quizData, setQuizData] = useState<QuizData | null>(null);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isTipsOpen, setIsTipsOpen] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
-  // SEO Rotation Logic
-  useEffect(() => {
-    const headlines = [
-      "Quick Quiz Questions & Answers",
-      "Practice Quick Quiz Online",
-      "Daily Quiz Questions Free",
-      "Test Your Knowledge Fast",
-      "Quick Answer Quiz Practice",
-      "Online Quiz with Answers",
-      "Free Quiz Questions Daily",
-      "Best Quick Quiz Website",
-      "Learn with Quick Quiz",
-      "Easy Quiz Questions Online"
-    ];
+  const handleQuizGenerated = (data: QuizData) => {
+    setQuizData(data);
+    setView("QUIZ");
+    setIsLoading(false);
+  };
 
-    const descriptions = [
-      "Practice quick quiz questions and answers online. Improve your knowledge with daily quizzes for free.",
-      "Take quick quizzes with answers and test your knowledge instantly. Simple and fast learning platform.",
-      "Explore a wide range of quiz questions with answers. Perfect for students and learners.",
-      "Join QuickQuiz and practice daily quiz questions with instant answers and explanations."
-    ];
-
-    let headlineIndex = 0;
-    let descriptionIndex = 0;
-
-    const interval = setInterval(() => {
-      // Rotate Headline
-      headlineIndex = (headlineIndex + 1) % headlines.length;
-      const nextHeadline = (headlineIndex + 1) % headlines.length;
-      document.title = `${headlines[headlineIndex]} – ${headlines[nextHeadline]}`;
-
-      // Rotate Description
-      descriptionIndex = (descriptionIndex + 1) % descriptions.length;
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute('content', descriptions[descriptionIndex]);
-      }
-    }, 10000); // Rotate every 10 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleGenerate = async (notes: string, difficulty: Difficulty, count: number, language: string) => {
-    setAppState('GENERATING');
-    setLoading(true);
+  const handleGenerate = async (text: string, difficulty: Difficulty, numQuestions: number, language: string) => {
+    setIsLoading(true);
     setError(null);
-    
-    let attempts = 0;
-    const maxAttempts = 2;
-
-    const attemptGeneration = async (): Promise<boolean> => {
-      try {
-        const generatedQuiz = await generateQuiz(notes, difficulty, count, language);
-        
-        // Validate the generated quiz
-        if (!validateQuiz(generatedQuiz)) {
-          return false;
-        }
-
-        setQuiz(generatedQuiz);
-        setAppState('QUIZ');
-        return true;
-      } catch (err) {
-        console.error("Quiz generation attempt failed", err);
-        return false;
-      }
-    };
-
-    while (attempts < maxAttempts) {
-      attempts++;
-      const success = await attemptGeneration();
-      if (success) return;
-      
-      if (attempts < maxAttempts) {
-        console.log(`Attempt ${attempts} failed. Retrying...`);
-      }
+    try {
+      const data = await generateQuiz(text, difficulty, numQuestions, language);
+      handleQuizGenerated(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate quiz. Please try again.");
+      setIsLoading(false);
     }
-
-    setError("Regenerating quiz...");
-    setAppState('HOME');
-    setLoading(false);
   };
 
-  const handleScan = async (text: string, difficulty: Difficulty, count: number, language: string, topic?: string) => {
-    setAppState('GENERATING');
-    setLoading(true);
+  const handleCurrentAffairs = async (numQuestions: number, language: string, difficulty: Difficulty) => {
+    setIsLoading(true);
     setError(null);
-    
-    let attempts = 0;
-    const maxAttempts = 2;
-
-    const attemptGeneration = async (): Promise<boolean> => {
-      try {
-        // 1. Clean the OCR text first
-        const cleanedText = await cleanOCRText(text);
-        
-        // 2. Generate the quiz from cleaned text
-        const fullNotes = topic ? `Topic: ${topic}\n\nExtracted Text:\n${cleanedText}` : cleanedText;
-        const generatedQuiz = await generateQuiz(fullNotes, difficulty, count, language);
-        
-        // 3. Validate the generated quiz
-        if (!validateQuiz(generatedQuiz)) {
-          return false;
-        }
-
-        setQuiz(generatedQuiz);
-        setAppState('QUIZ');
-        return true;
-      } catch (err) {
-        console.error("Quiz generation attempt failed", err);
-        return false;
-      }
-    };
-
-    while (attempts < maxAttempts) {
-      attempts++;
-      const success = await attemptGeneration();
-      if (success) return;
-      
-      if (attempts < maxAttempts) {
-        console.log(`Attempt ${attempts} failed. Retrying...`);
-      }
+    try {
+      const data = await generateCurrentAffairs(numQuestions, language, difficulty);
+      handleQuizGenerated(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate current affairs quiz.");
+      setIsLoading(false);
     }
-
-    setError("Regenerating quiz...");
-    setAppState('HOME');
-    setLoading(false);
   };
 
-  const handleCurrentAffairs = async (count: number, language: string, difficulty: Difficulty) => {
-    setAppState('GENERATING');
-    setLoading(true);
-    setError(null);
-    
-    let attempts = 0;
-    const maxAttempts = 2;
-
-    const attemptGeneration = async (): Promise<boolean> => {
-      try {
-        const generatedQuiz = await generateCurrentAffairsQuiz(count, language, difficulty);
-        
-        // Validate the generated quiz
-        if (!validateQuiz(generatedQuiz)) {
-          return false;
-        }
-
-        setQuiz(generatedQuiz);
-        setAppState('QUIZ');
-        return true;
-      } catch (err) {
-        console.error("Current affairs generation attempt failed", err);
-        return false;
-      }
-    };
-
-    while (attempts < maxAttempts) {
-      attempts++;
-      const success = await attemptGeneration();
-      if (success) return;
-      
-      if (attempts < maxAttempts) {
-        console.log(`Attempt ${attempts} failed. Retrying...`);
-      }
-    }
-
-    setError("Regenerating quiz...");
-    setAppState('HOME');
-    setLoading(false);
+  const handleQuizFinish = (result: QuizResult) => {
+    setQuizResult(result);
+    setView("RESULT");
   };
 
-  const handleFinishQuiz = (quizResult: QuizResult) => {
-    setResult(quizResult);
-    setAppState('RESULT');
+  const handleRetry = () => {
+    setQuizResult(null);
+    setView("QUIZ");
   };
 
-  const handleRetake = () => {
-    setResult(null);
-    setAppState('QUIZ');
-  };
-
-  const handleNew = () => {
-    setQuiz(null);
-    setResult(null);
-    setAppState('HOME');
-  };
-
-  const handleShowArticles = () => {
-    setAppState('ARTICLES');
-  };
-
-  const handleNavigate = (state: AppState) => {
-    if (state === 'GK_QUIZ') {
-      handleGenerate('General Knowledge', Difficulty.MEDIUM, 10, 'English');
-    } else if (state === 'SCIENCE_QUIZ') {
-      handleGenerate('Science', Difficulty.MEDIUM, 10, 'English');
-    } else if (state === 'HISTORY_QUIZ') {
-      handleGenerate('History', Difficulty.MEDIUM, 10, 'English');
-    } else {
-      setAppState(state);
-    }
+  const handleHome = () => {
+    setQuizData(null);
+    setQuizResult(null);
+    setView("HOME");
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
       <Header 
-        onShowTips={() => setIsTipsOpen(true)} 
-        onShowArticles={handleShowArticles}
-        onGoHome={handleNew}
-        onNavigate={handleNavigate}
-        logoUrl={logoUrl}
+        onShowTips={() => {}} 
+        onShowArticles={() => {}} 
+        onGoHome={handleHome} 
+        onNavigate={() => {}} 
       />
       
-      <main className="flex-grow">
-        {error && (
-          <div className="max-w-3xl mx-auto mt-6 px-6">
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path></svg>
-                <p className="text-sm font-medium">{error}</p>
-              </div>
-              <button onClick={() => setError(null)} className="text-rose-400 hover:text-rose-600">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {appState === 'HOME' && (
-          <Home 
-            onGenerate={handleGenerate} 
-            onScan={handleScan} 
-            onCurrentAffairs={handleCurrentAffairs}
-            loading={loading} 
-          />
-        )}
-
-        {appState === 'ARTICLES' && (
-          <Articles onBack={handleNew} />
-        )}
-
-        {appState === 'GENERATING' && (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center animate-fadeIn">
-            <div className="relative w-24 h-24 md:w-48 md:h-48 mb-6 md:mb-8">
-              <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
-              <div className="absolute inset-4 bg-indigo-500/20 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl flex items-center justify-center animate-bounce overflow-hidden">
-                  {logoUrl ? (
-                    <img src={logoUrl} alt="QuickQuiz Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
-                  ) : (
-                    <svg className="w-6 h-6 md:w-12 md:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  )}
+      <main className="pt-20 md:pt-24 pb-20">
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div 
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-xl"
+            >
+              <div className="text-center p-12 bg-white rounded-[3rem] shadow-2xl border border-slate-100 max-w-md w-full mx-4">
+                <div className="relative w-24 h-24 mx-auto mb-10">
+                  <div className="absolute inset-0 border-4 border-blue-100 rounded-full" />
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent"
+                  />
+                  <Loader2 className="absolute inset-0 m-auto w-10 h-10 text-blue-600 animate-pulse" />
+                </div>
+                <h3 className="text-3xl font-black text-slate-900 mb-4 font-display">Crafting Your Quiz</h3>
+                <p className="text-slate-500 font-bold text-lg leading-relaxed">
+                  Our AI is analyzing your notes to generate the perfect study material...
+                </p>
+                <div className="mt-10 flex justify-center gap-2">
+                  {[0, 1, 2].map(i => (
+                    <motion.div 
+                      key={i}
+                      animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                      className="w-2.5 h-2.5 bg-blue-600 rounded-full"
+                    />
+                  ))}
                 </div>
               </div>
+            </motion.div>
+          ) : error ? (
+            <motion.div 
+              key="error"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-xl mx-auto mt-20 p-12 bg-white rounded-[3rem] shadow-2xl border-2 border-rose-100 text-center"
+            >
+              <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
+                <AlertCircle className="w-10 h-10 text-rose-500" />
+              </div>
+              <h3 className="text-3xl font-black text-slate-900 mb-4 font-display">Something went wrong</h3>
+              <p className="text-slate-500 font-bold text-lg mb-10 leading-relaxed">{error}</p>
+              <button 
+                onClick={() => setError(null)}
+                className="px-10 py-5 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 mx-auto shadow-xl active:scale-95"
+              >
+                <RefreshCcw className="w-5 h-5" />
+                Try Again
+              </button>
+            </motion.div>
+          ) : (
+            <div key={view}>
+              {view === "HOME" && (
+                <Home 
+                  onGenerate={handleGenerate}
+                  onScan={(text, diff, num, lang) => handleGenerate(text, diff, num, lang)}
+                  onCurrentAffairs={handleCurrentAffairs}
+                  loading={isLoading}
+                />
+              )}
+              {view === "QUIZ" && quizData && (
+                <Quiz 
+                  quiz={quizData} 
+                  onFinish={handleQuizFinish} 
+                  onExit={handleHome} 
+                />
+              )}
+              {view === "RESULT" && quizData && quizResult && (
+                <Result 
+                  quiz={quizData} 
+                  result={quizResult} 
+                  onRetry={handleRetry} 
+                  onHome={handleHome} 
+                />
+              )}
             </div>
-            <h2 className="text-xl md:text-4xl font-black text-slate-900 mb-3 md:mb-4 tracking-tight">AI is crafting your quiz...</h2>
-            <p className="text-slate-500 font-bold text-xs md:text-base max-w-md mx-auto leading-relaxed">
-              We're analyzing your notes and generating high-quality questions. This usually takes 10-15 seconds.
-            </p>
-            <div className="mt-6 md:mt-8 flex gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-              <div className="w-1.5 h-1.5 md:w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-1.5 h-1.5 md:w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-            </div>
-          </div>
-        )}
-
-        {appState === 'QUIZ' && quiz && (
-          <QuizPlayer 
-            quiz={quiz} 
-            onFinish={handleFinishQuiz} 
-            onExit={handleNew}
-          />
-        )}
-
-        {appState === 'RESULT' && quiz && result && (
-          <ResultView 
-            quiz={quiz} 
-            result={result} 
-            onRetake={handleRetake} 
-            onNew={handleNew} 
-          />
-        )}
-
-        {['ABOUT', 'CONTACT', 'PRIVACY', 'TERMS', 'DISCLAIMER'].includes(appState) && (
-          <StaticPage type={appState} onBack={handleNew} />
-        )}
+          )}
+        </AnimatePresence>
       </main>
 
-      <StudyTipsModal isOpen={isTipsOpen} onClose={() => setIsTipsOpen(false)} />
-
-      <footer className="py-12 px-6 text-slate-400 text-sm no-print border-t border-slate-100 mt-20 bg-slate-50/50">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
-                {logoUrl ? (
-                  <img src={logoUrl} alt="QuickQuiz Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
-                ) : (
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                )}
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-100 py-16 md:py-24 no-print">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-20 mb-16 md:mb-24">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                  <span className="text-white font-black text-xl">Q</span>
+                </div>
+                <span className="text-2xl font-black tracking-tighter font-display">QuickQuiz</span>
               </div>
-              <span className="text-xl font-black text-slate-900 tracking-tight">QuickQuiz</span>
+              <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed max-w-md">
+                The world's most advanced AI-powered study companion. Transform any notes into interactive quizzes in seconds.
+              </p>
             </div>
-            <p className="max-w-xs font-medium leading-relaxed mb-6">
-              The AI-powered study tool that turns your notes into high-quality quizzes in seconds. Master any subject with active recall.
+            <div>
+              <h4 className="font-black text-slate-900 text-xs uppercase tracking-widest mb-8">Product</h4>
+              <ul className="space-y-4 text-slate-500 font-bold text-lg">
+                <li><a href="#" className="hover:text-blue-600 transition-colors">AI Generator</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">OCR Scanner</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Study Tips</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Blog</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-black text-slate-900 text-xs uppercase tracking-widest mb-8">Company</h4>
+              <ul className="space-y-4 text-slate-500 font-bold text-lg">
+                <li><a href="#" className="hover:text-blue-600 transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-blue-600 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-12 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-slate-400 font-bold text-sm">
+              © 2026 QuickQuiz AI. Built for students, by students.
             </p>
-            <p className="font-bold text-slate-500">© 2026 QuickQuiz. Built for rapid learning.</p>
-          </div>
-          
-          <div>
-            <h4 className="text-slate-900 font-black uppercase tracking-wider text-xs mb-6">Product</h4>
-            <ul className="space-y-4 font-bold">
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('HOME'); }} className="hover:text-blue-600 transition-colors">Home</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('ARTICLES'); }} className="hover:text-blue-600 transition-colors">Blog</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setIsTipsOpen(true); }} className="hover:text-blue-600 transition-colors">Study Tips</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('ABOUT'); }} className="hover:text-blue-600 transition-colors">About Us</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-slate-900 font-black uppercase tracking-wider text-xs mb-6">Legal & Support</h4>
-            <ul className="space-y-4 font-bold">
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('CONTACT'); }} className="hover:text-blue-600 transition-colors">Contact</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('PRIVACY'); }} className="hover:text-blue-600 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('TERMS'); }} className="hover:text-blue-600 transition-colors">Terms of Service</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setAppState('DISCLAIMER'); }} className="hover:text-blue-600 transition-colors">Disclaimer</a></li>
-            </ul>
+            <div className="flex gap-8">
+              <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors font-black text-xs uppercase tracking-widest">Twitter</a>
+              <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors font-black text-xs uppercase tracking-widest">LinkedIn</a>
+              <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors font-black text-xs uppercase tracking-widest">Instagram</a>
+            </div>
           </div>
         </div>
       </footer>
