@@ -9,8 +9,15 @@ export const cleanText = async (text: string): Promise<string> => {
       body: JSON.stringify({ text }),
     });
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || "Failed to clean text");
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to clean text");
+      } else {
+        const textError = await response.text();
+        console.error("Non-JSON error response:", textError.substring(0, 200));
+        throw new Error("Server error: Received unexpected response format. The server might be busy or restarting.");
+      }
     }
     const data = await response.json();
     return data.text;
@@ -32,8 +39,13 @@ export const generateQuiz = async (
     body: JSON.stringify({ text, difficulty, numQuestions, language }),
   });
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error || "Failed to generate quiz");
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const err = await response.json();
+      throw new Error(err.error || "Failed to generate quiz");
+    } else {
+      throw new Error("Server error: AI service is temporarily unavailable. Please try again in 30 seconds.");
+    }
   }
   return response.json();
 };
@@ -49,8 +61,36 @@ export const generateCurrentAffairs = async (
     body: JSON.stringify({ numQuestions, language, difficulty }),
   });
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error || "Failed to generate current affairs");
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const err = await response.json();
+      throw new Error(err.error || "Failed to generate current affairs");
+    } else {
+      throw new Error("Server error: Received unexpected response format. Please try again in a moment.");
+    }
+  }
+  return response.json();
+};
+
+export const generateRandomQuiz = async (
+  category: string,
+  numQuestions: number,
+  language: string = "Hindi",
+  difficulty: Difficulty = Difficulty.MEDIUM
+): Promise<QuizData> => {
+  const response = await fetch("/api/ai/random-quiz", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ category, numQuestions, language, difficulty }),
+  });
+  if (!response.ok) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const err = await response.json();
+      throw new Error(err.error || "Failed to generate quiz");
+    } else {
+      throw new Error("Server error: AI service is busy or restarting. Please try again soon.");
+    }
   }
   return response.json();
 };

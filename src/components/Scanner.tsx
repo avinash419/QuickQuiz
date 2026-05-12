@@ -13,6 +13,7 @@ interface ScannerProps {
 const Scanner: React.FC<ScannerProps> = ({ isOpen, onClose, onCapture }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +32,19 @@ const Scanner: React.FC<ScannerProps> = ({ isOpen, onClose, onCapture }) => {
     }
     return () => stopCamera();
   }, [isOpen]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setCapturedImage(result);
+        setError(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const startCamera = async () => {
     setIsCameraReady(false);
@@ -120,7 +134,7 @@ const Scanner: React.FC<ScannerProps> = ({ isOpen, onClose, onCapture }) => {
       setError(null);
       try {
         const base64 = capturedImage.split(',')[1];
-        // 1. Extract raw text from image using Tesseract (with preprocessing)
+        // 1. Extract raw text from image (Placeholder since Tesseract is removed)
         const rawText = await extractTextFromImage(base64, (p, s) => {
           setProgress(p);
           setStatus(s);
@@ -226,12 +240,20 @@ const Scanner: React.FC<ScannerProps> = ({ isOpen, onClose, onCapture }) => {
               </div>
               <p className="font-black text-xl md:text-2xl text-white mb-3 md:mb-4 font-display">Scanner Error</p>
               <p className="text-slate-400 text-base md:text-lg mb-8 md:mb-10 max-w-sm leading-relaxed">{error}</p>
-              <button 
-                onClick={startCamera}
-                className="px-8 md:px-10 py-3.5 md:py-4 bg-white text-slate-900 rounded-xl md:rounded-2xl font-black text-xs md:text-sm hover:bg-slate-100 transition-all active:scale-95"
-              >
-                Try Again
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                <button 
+                  onClick={startCamera}
+                  className="flex-1 px-6 py-3.5 bg-white text-slate-900 rounded-xl font-black text-xs md:text-sm hover:bg-slate-100 transition-all active:scale-95"
+                >
+                  Try Again
+                </button>
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 px-6 py-3.5 bg-blue-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-blue-700 transition-all active:scale-95"
+                >
+                  Upload Photo
+                </button>
+              </div>
             </div>
           ) : capturedImage ? (
             <motion.div 
@@ -280,7 +302,11 @@ const Scanner: React.FC<ScannerProps> = ({ isOpen, onClose, onCapture }) => {
           {capturedImage ? (
             <div className="flex w-full gap-3 md:gap-4 max-w-lg mx-auto">
               <button 
-                onClick={() => setCapturedImage(null)}
+                onClick={() => {
+                  setCapturedImage(null);
+                  setError(null);
+                  startCamera();
+                }}
                 disabled={isProcessing}
                 className={`flex-1 py-4 md:py-5 bg-slate-100 text-slate-700 font-black rounded-2xl md:rounded-[2rem] hover:bg-slate-200 transition-all flex items-center justify-center gap-2 md:gap-3 border border-slate-200 shadow-sm text-sm md:text-base ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
@@ -319,10 +345,24 @@ const Scanner: React.FC<ScannerProps> = ({ isOpen, onClose, onCapture }) => {
                 </div>
                 <span className="text-[8px] md:text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Tap to Capture</span>
               </button>
+              
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="text-blue-600 font-black text-[10px] md:text-xs uppercase tracking-widest hover:underline"
+              >
+                Or Upload from Gallery
+              </button>
             </div>
           )}
         </div>
       </motion.div>
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleFileUpload} 
+        accept="image/*" 
+        className="hidden" 
+      />
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );

@@ -79,6 +79,22 @@ const Home: React.FC<HomeProps> = ({ onGenerate, onScan, onCurrentAffairs, loadi
         >
           Paste your material or <b>scan a page</b> and watch AI transform it into a professional quiz in seconds.
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mt-10 flex flex-wrap justify-center gap-4"
+        >
+          <button 
+            onClick={() => onScan("", difficulty, 10, language, "RANDOM_SURPRISE")}
+            disabled={loading}
+            className="px-8 py-4 bg-white text-blue-600 border-2 border-blue-100 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+          >
+            <Sparkles className="w-4 h-4" />
+            Surprise Me
+          </button>
+        </motion.div>
       </div>
 
       {/* Current Affairs Banner */}

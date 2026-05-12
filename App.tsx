@@ -7,7 +7,7 @@ import Result from './src/components/Result';
 import { QuizData, QuizResult, Difficulty } from './src/types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2, AlertCircle, RefreshCcw } from 'lucide-react';
-import { generateQuiz, generateCurrentAffairs } from './src/services/aiService';
+import { generateQuiz, generateCurrentAffairs, generateRandomQuiz } from './src/services/aiService';
 
 const App: React.FC = () => {
   const [view, setView] = useState<"HOME" | "QUIZ" | "RESULT">("HOME");
@@ -46,6 +46,31 @@ const App: React.FC = () => {
     }
   };
 
+  const handleNavigate = async (page: string) => {
+    const categories = ["GK_QUIZ", "SCIENCE_QUIZ", "HISTORY_QUIZ"];
+    const targetPage = page === "RANDOM_SURPRISE" ? categories[Math.floor(Math.random() * categories.length)] : page;
+
+    const categoryMap: Record<string, string> = {
+      "GK_QUIZ": "General Knowledge & India Facts",
+      "SCIENCE_QUIZ": "General Science & Technology",
+      "HISTORY_QUIZ": "Indian & World History"
+    };
+
+    if (categoryMap[targetPage]) {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await generateRandomQuiz(categoryMap[targetPage], 10, "Hindi", Difficulty.MEDIUM);
+        handleQuizGenerated(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : `Failed to generate quiz.`);
+        setIsLoading(false);
+      }
+    } else if (page === "ABOUT" || page === "CONTACT") {
+      alert("This page is coming soon! Focus on your studies for now.");
+    }
+  };
+
   const handleQuizFinish = (result: QuizResult) => {
     setQuizResult(result);
     setView("RESULT");
@@ -68,7 +93,7 @@ const App: React.FC = () => {
         onShowTips={() => {}} 
         onShowArticles={() => {}} 
         onGoHome={handleHome} 
-        onNavigate={() => {}} 
+        onNavigate={handleNavigate} 
       />
       
       <main className="pt-20 md:pt-24 pb-20">
@@ -132,7 +157,13 @@ const App: React.FC = () => {
               {view === "HOME" && (
                 <Home 
                   onGenerate={handleGenerate}
-                  onScan={(text, diff, num, lang) => handleGenerate(text, diff, num, lang)}
+                  onScan={(text, diff, num, lang, topic) => {
+                    if (topic === "RANDOM_SURPRISE") {
+                      handleNavigate("RANDOM_SURPRISE");
+                    } else if (text) {
+                      handleGenerate(text, diff, num, lang);
+                    }
+                  }}
                   onCurrentAffairs={handleCurrentAffairs}
                   loading={isLoading}
                 />
